@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             version="3.0"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence 
+                                 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+
+    <persistence-unit name="musicdata" transaction-type="RESOURCE_LOCAL">
+
+        <properties>
+           
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/musicdata"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="Aldyaldy13"/>
+
+
+            <property name="eclipselink.ddl-generation" 
+                      value="create-or-extend-tables"/>
+            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="eclipselink.id-validation" value="NONE"/>
+        </properties>
+    </persistence-unit>
+</persistence>
