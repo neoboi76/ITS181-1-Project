@@ -25,11 +25,12 @@ public class SongEntity {
 	@Column(name = "image_path")
 	private String imagePath;
 	
-	public SongEntity(Long id, String title, String audioPath, String imagePath) {
+	public SongEntity(Long id, String title, String lyrics, String audioPath, String imagePath) {
 
 		super();
 		this.id = id;
 		this.title = title;
+		this.lyrics = lyrics;
 		this.audioPath = audioPath;
 		this.imagePath = imagePath;
 		
@@ -51,10 +52,17 @@ public class SongEntity {
 		return title;
 	}
 	
-	public void setString(String title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 	
+	public String getLyrics() {
+		return lyrics;
+	}
+	
+	public void setLyrics(String lyrics) {
+		this.lyrics = lyrics;
+	}
 	
 	public String getAudioPath() {
 		return audioPath;

@@ -43,7 +43,7 @@ public class PlayerThreadFX {
 
     public void resume() {
         if (mediaPlayer != null) {
-            mediaPlayer.play(); // continues from paused position
+            mediaPlayer.play();
         }
     }
 
@@ -52,11 +52,14 @@ public class PlayerThreadFX {
             mediaPlayer.stop();
         }
     }
-    
+
     public void setVolume(double volume) {
         if (mediaPlayer != null) {
             mediaPlayer.setVolume(volume);
         }
     }
 
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
 }
