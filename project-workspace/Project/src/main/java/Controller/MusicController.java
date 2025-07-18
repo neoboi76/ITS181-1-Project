@@ -7,8 +7,12 @@ import java.util.List;
 import Model.Database;
 import Model.SongEntity;
 import View.SongEvent;
+import View.Utils;
 
 public class MusicController {
+	
+	public static final String songExtension = "mp3";
+	public static final String databaseExtension = "saf";
 	
 	Database db = new Database();
 	
@@ -37,14 +41,23 @@ public class MusicController {
 	}
 	
 	public void saveFile(File file) {
-		db.saveSong(file);
+		if (Utils.getFileExtension(file) == songExtension) {
+			db.saveSongMp3(file);
+		}
+		else if (Utils.getFileExtension(file) == databaseExtension) {
+			db.saveSongDatabase(file);
+		}
 	}
 	
-    public void loadSong(File file) throws IOException {
-    	
-    	db.loadSong(file);
-    	
-    	
+    public void loadFile(File file) throws IOException {
+    	if (Utils.getFileExtension(file) == songExtension) {
+			db.loadSongMp3(file);
+		}
+		else if (Utils.getFileExtension(file) == databaseExtension) {
+			db.loadSongDatabase(file);
+		}
+    	  	
     }
+
     
 }

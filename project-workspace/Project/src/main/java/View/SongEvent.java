@@ -22,7 +22,7 @@ public class SongEvent extends EventObject {
 
 	private String imagePath;
 	
-	public SongEvent(Object source, String title, String artist, private String album, double duration, String lyrics, String audioPath, String imagePath) {
+	public SongEvent(Object source, String title, String artist, String album, double duration, String lyrics, String audioPath, String imagePath) {
 
 		super(source);
 		this.id = id;

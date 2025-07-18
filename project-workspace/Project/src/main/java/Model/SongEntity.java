@@ -3,6 +3,7 @@ package Model;
 import java.io.Serializable;
 
 import jakarta.persistence.*;
+import javafx.scene.media.Media;
 
 //Model Class
 
@@ -116,5 +117,17 @@ public class SongEntity implements Serializable {
 	public void setImagePath(String imagePath) {
 		this.imagePath = imagePath;
 	}
+	
+	private String getMeta(Media media, String key) {
+	    Object value = media.getMetadata().get(key);
+	    return value != null ? value.toString() : "Unknown";
+	}
+
+    private static String formatDuration(double duration) {
+        int minutes = (int) duration / 60;
+        int seconds = (int) duration % 60;
+        return String.format("%d:%02d", minutes, seconds);
+    }
+	
 	
 }

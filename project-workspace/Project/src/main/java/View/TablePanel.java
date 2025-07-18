@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import Controller.MusicController;
 
 import Model.SongEntity;
 
@@ -17,6 +18,7 @@ public class TablePanel extends JPanel{
 
 	private JTable table;
 	private SongEntityTableModel tableModel;
+	private MusicController controller;
 	
 	public TablePanel() {
 		
@@ -47,6 +49,7 @@ public class TablePanel extends JPanel{
 	}
 	
 	public void update() {
+		tableModel.setData(controller.getAllSongs());
 		tableModel.fireTableDataChanged();
 	}
 	

@@ -34,17 +34,25 @@ public class MusicPlayer {
 		fileChooser.addChoosableFileFilter(new SongFileFilter());
 		controller = new MusicController();
 		
-		tablePanel.setData(controller.getAllSongs());
+		tablePanel.loadSongs();
 		
 		frm.setJMenuBar(createMenuBar());
 		
-		//songPanel.setFormListener()
-		
+		songPanel.setSongListener(new SongListener() {
+			
+			public void songEventOccured(SongEvent e) {
+				controller.addSong(e);
+				tablePanel.loadSongs();
+			}
+			
+		});
 		
 		frm.add(songPanel, BorderLayout.WEST);
 		frm.add(tablePanel, BorderLayout.CENTER);
 		
 		frm.setVisible(true);
+		
+		tablePanel.loadSongs();
 		
 	}
 	
@@ -99,7 +107,7 @@ public class MusicPlayer {
 				
 				if (fileChooser.showOpenDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					try {
-						controller.loadSong(fileChooser.getSelectedFile());
+						controller.loadFile(fileChooser.getSelectedFile());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -124,14 +132,35 @@ public class MusicPlayer {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				if (fileChooser.showSaveDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					try {
-						controller.saveSong(fileChooser.getSelectedFile());
+						controller.saveFile(fileChooser.getSelectedFile());
 						tablePanel.update();
+						
+					} catch (Exception ex) {
+						JOptionPane.showConfirmDialog(frm, ex.getStackTrace(), "Error", JOptionPane.ERROR_MESSAGE);
 					}
+					
 				}
 			}
 			
 			
 		});
+		
+		
+		exitItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				int action = JOptionPane.showConfirmDialog(frm, "Are you sure?", "Confim Exit", JOptionPane.OK_CANCEL_OPTION);
+				
+				
+				if (action == JOptionPane.OK_OPTION) {
+					System.exit(0);
+				}
+			}
+			
+		});
+		
+		return menuBar;
 		
 	}
 }
