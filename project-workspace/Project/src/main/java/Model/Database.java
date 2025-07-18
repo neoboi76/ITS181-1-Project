@@ -33,6 +33,9 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.images.Artwork;
 
+import javafx.application.Platform;
+
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.media.Media;
@@ -43,20 +46,24 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-
+import javafx.embed.swing.JFXPanel;
 import java.util.logging.Level;
 import View.Utils;
 
 public class Database {
 	
+	
 	private EntityManagerFactory emf;
     private EntityManager em;
     
     private ArrayList<SongEntity> songs;
+     
+
     
     public Database() {
     	emf = Persistence.createEntityManagerFactory("musicdata");
     	em = emf.createEntityManager();
+    	songs = new ArrayList<>();
     }
     
     public List<SongEntity> getAllSongs() {
@@ -71,7 +78,31 @@ public class Database {
     	dbSong.setLyrics(music.getLyrics());
     	dbSong.setAudioPath(music.getAudioPath());
     	dbSong.setImagePath(music.getImagePath());
-    	em.persist(music);
+    	
+    	if (dbSong.getAlbum() == null || dbSong.getAlbum().trim().isEmpty()) {
+    	    dbSong.setAlbum("Unknown Album");
+    	}
+    	if (dbSong.getArtist() == null || dbSong.getArtist().trim().isEmpty()) {
+    	    dbSong.setArtist("Unknown Artist");
+    	}
+    	if (dbSong.getTitle() == null || dbSong.getTitle().trim().isEmpty()) {
+    	    dbSong.setTitle("Untitled");
+    	}
+    	//if (dbSong.getAudioPath() == null || dbSong.getAudioPath().trim().isEmpty()) {
+    	//    dbSong.setAudioPath("UnknownPath.mp3"); // You can change this to whatever makes sense
+    	//}
+    	if (dbSong.getDuration() <= 0.0) {
+    	    dbSong.setDuration(0.0); // Default duration if invalid
+    	}
+    	if (dbSong.getLyrics() == null || dbSong.getLyrics().trim().isEmpty()) {
+    	    dbSong.setLyrics("No lyrics available.");
+    	}
+    	if (dbSong.getImagePath() == null || dbSong.getImagePath().trim().isEmpty()) {
+    	    dbSong.setImagePath("default.jpg"); // Replace with your actual default image filename
+    	}
+
+    	
+    	em.persist(dbSong);
     	em.getTransaction().commit();
     	
     }
@@ -89,111 +120,128 @@ public class Database {
     }
     
     public void saveSongMp3(File file) {
-   
-	    try {
-	        // Step 1: Prepare Media and get metadata
-	        Media media = new Media(file.toURI().toString());
+    	
+    	
+  
+    	Platform.runLater(() -> {
+    		
+    		try {
+    	        // Step 1: Prepare Media and get metadata
+    	        Media media = new Media(file.toURI().toString());
+    	         	       
+    	        	
+    	        MediaPlayer mediaPlayer = new MediaPlayer(media);
+    	        
+    	        media.setOnError(() -> {
+    	            System.out.println("Media error: " + media.getError().getMessage());
+    	            media.getError().printStackTrace();
+    	        });
 
+    	        mediaPlayer.setOnError(() -> {
+    	            System.out.println("MediaPlayer error: " + mediaPlayer.getError().getMessage());
+    	            mediaPlayer.getError().printStackTrace();
+    	        });
+    	        
+    	        mediaPlayer.setOnReady(() -> {
+    	        	
+    	        	System.out.println("CX");
+    	        	
+    	            String title = Utils.getMeta(media, "title");
+    	            String artist = Utils.getMeta(media, "artist");
+    	            String album = Utils.getMeta(media, "album");
+    	            double duration = media.getDuration().toSeconds();
+    	            String audioPath = file.getAbsolutePath();
+    	            System.out.println(audioPath);
 
-	        MediaPlayer mediaPlayer = new MediaPlayer(media);
-	        mediaPlayer.setOnReady(() -> {
-	            String title = Utils.getMeta(media, "title");
-	            String artist = Utils.getMeta(media, "artist");
-	            String album = Utils.getMeta(media, "album");
-	            double duration = media.getDuration().toSeconds();
-	            String audioPath = file.getAbsolutePath();
+    	            // Step 2: Load lyrics
+    	            String baseName = Utils.removeExtension(file.getName());
+    	            File lyricsFile = new File(file.getParent(), baseName + ".txt");
+    	            String lyrics = "";
+    	            try {
+    	                if (lyricsFile.exists()) {
+    	                    lyrics = Files.readString(lyricsFile.toPath(), StandardCharsets.UTF_8);
+    	                }
+    	            } catch (IOException e) {
+    	                e.printStackTrace();
+    	            }
 
-	            // Step 2: Load lyrics
-	            String baseName = Utils.removeExtension(file.getName());
-	            File lyricsFile = new File(file.getParent(), baseName + ".txt");
-	            String lyrics = "";
-	            try {
-	                if (lyricsFile.exists()) {
-	                    lyrics = Files.readString(lyricsFile.toPath(), StandardCharsets.UTF_8);
-	                }
-	            } catch (IOException e) {
-	                e.printStackTrace();
-	            }
+    	            // Step 3: Load image path
+    	            File imageFile = new File(file.getParent(), baseName + ".jpg");
+    	            if (!imageFile.exists()) {
+    	                imageFile = new File(file.getParent(), baseName + ".png");
+    	            }
+    	            String imagePath = imageFile.exists() ? imageFile.getAbsolutePath() : null;
 
-	            // Step 3: Load image path
-	            File imageFile = new File(file.getParent(), baseName + ".jpg");
-	            if (!imageFile.exists()) {
-	                imageFile = new File(file.getParent(), baseName + ".png");
-	            }
-	            String imagePath = imageFile.exists() ? imageFile.getAbsolutePath() : null;
+    	            // Step 4: Add new song to list
+    	            SongEntity song = new SongEntity(title, artist, album, duration, lyrics, imagePath, audioPath);
+    	            songs.add(song);
 
-	            // Step 4: Add new song to list
-	            SongEntity song = new SongEntity(title, artist, album, duration, lyrics, imagePath, audioPath);
-	            songs.add(song);
+    	            // Step 5: Save songs list to file
+    	            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+    	                SongEntity[] music = songs.toArray(new SongEntity[0]);
+    	                oos.writeObject(music);
+    	            } catch (IOException ex) {
+    	                ex.printStackTrace();
+    	            }
+    	        });
 
-	            // Step 5: Save songs list to file
-	            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-	                SongEntity[] music = songs.toArray(new SongEntity[0]);
-	                oos.writeObject(music);
-	            } catch (IOException ex) {
-	                ex.printStackTrace();
-	            }
-	        });
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+    	    } catch (Exception e) {
+    	        e.printStackTrace();
+    	    }
+    	
+    	});
     	
 
     }
     
     public void loadSongMp3(File file) {
 
-    	try {
-            Media media = new Media(file.toURI().toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
-
-            mediaPlayer.setOnReady(() -> {
-                String title = Utils.getMeta(media, "title");
-                String artist = Utils.getMeta(media, "artist");
-                String album = Utils.getMeta(media, "album");
-                javafx.util.Duration fxDuration = media.getDuration();
-                double duration = fxDuration.toSeconds();
-                String audioPath = file.getAbsolutePath();
-
-                File lyricsFile = new File(file.getParent(), Utils.removeExtension(file.getName()) + ".txt");
-                String lyrics = "";
-                try {
-                    if (lyricsFile.exists()) {
-                        lyrics = Files.readString(lyricsFile.toPath(), StandardCharsets.UTF_8);
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-
-
-                File imageFile = new File(file.getParent(), Utils.removeExtension(file.getName()) + ".jpg");
-                String imagePath = imageFile.exists() ? imageFile.getAbsolutePath() : null;
-
-
-                SongEntity song = new SongEntity(title, artist, album, duration, lyrics, imagePath, audioPath);
-                addSong(song);
+    	Platform.runLater(() -> {
+    		
+    		try {
+        		Media media = new Media(file.toURI().toASCIIString());
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
+                String audioPath = file.getAbsolutePath(); 
+                System.out.println("Ok");
                 
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("MP3 Info");
-                alert.setHeaderText("Loaded Metadata");
-                alert.setContentText(
-                    "🎵 Title: " + title +
-                    "\n🎤 Artist: " + artist +
-                    "\n💿 Album: " + album +
-                    "\n⏱ Duration: " + Utils.formatDuration(duration)
-                );
-                alert.showAndWait();
-            });
+                mediaPlayer.setOnReady(() -> {
+                    System.out.println("CX");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert errorAlert = new Alert(AlertType.ERROR);
-            errorAlert.setTitle("Error");
-            errorAlert.setHeaderText("Could not load MP3");
-            errorAlert.setContentText("Error reading MP3 file.");
-            errorAlert.showAndWait();
-        }
+                    /*
+                    String title = Utils.getMeta(media, "title");
+                    String artist = Utils.getMeta(media, "artist");
+                    String album = Utils.getMeta(media, "album");
+                    double duration = media.getDuration().toSeconds();*/
+                    
+                    String title = "Duvet";
+                    String artist = "Boa";
+                    String album = Utils.getMeta(media, "artist");
+                    double duration = media.getDuration().toSeconds();
+                    String lyrics = null;
+                    String imagePath = null;
+
+                    System.out.println(audioPath);
+
+                    SongEntity song = new SongEntity(title, artist, album, duration, lyrics, audioPath, imagePath);
+
+                    addSong(song);
+                    
+                    songs.add(song);
+                   
+                });
+
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                Alert errorAlert = new Alert(AlertType.ERROR);
+                errorAlert.setTitle("Error");
+                errorAlert.setHeaderText("Could not load MP3");
+                errorAlert.setContentText("Error reading MP3 file.");
+                errorAlert.showAndWait();
+            }
+    	});
+
+   
     }
     
     public void loadSongDatabase(File safFile) {
@@ -201,9 +249,12 @@ public class Database {
              ObjectInputStream ois = new ObjectInputStream(fis)) {
 
             SongEntity[] music = (SongEntity[]) ois.readObject();
+            songs.clear();
+            songs.addAll(Arrays.asList(music));
             for (SongEntity s : songs) {
-            	addSong(s);
+                addSong(s); // persist the loaded songs
             }
+
             songs.clear();
             songs.addAll(Arrays.asList(music));
 
@@ -245,7 +296,9 @@ public class Database {
         }
     }
 
-  
+    public SongEntity getSongById(Long id) {
+    	return em.find(SongEntity.class, id);
+    }
 	
     
 }

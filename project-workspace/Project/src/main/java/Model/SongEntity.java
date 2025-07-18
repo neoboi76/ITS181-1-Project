@@ -15,26 +15,26 @@ public class SongEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false, unique = true)
+	//@Column(nullable = false, unique = true)
 	private String title;
 	
-	@Column(nullable = false)
+	//@Column(nullable = false)
 	private String artist;
 	
-	@Column(nullable = false)
+	//@Column(nullable = false)
 	private String album;
 	
-	@Column(nullable = false)
+	//@Column(nullable = false)
 	private double duration;
 	
-	@Lob
-	@Column(nullable = false)
+	//@Lob
+	//@Column(nullable = false)
 	private String lyrics;
 	
 	@Column(name = "audio_path", nullable = false)
 	private String audioPath;
 	
-	@Column(name = "image_path")
+	//@Column(name = "image_path")
 	private String imagePath;
 	
 	public SongEntity(String title, String artist, String album, double duration, String lyrics, String audioPath, String imagePath) {
@@ -117,17 +117,6 @@ public class SongEntity implements Serializable {
 	public void setImagePath(String imagePath) {
 		this.imagePath = imagePath;
 	}
-	
-	private String getMeta(Media media, String key) {
-	    Object value = media.getMetadata().get(key);
-	    return value != null ? value.toString() : "Unknown";
-	}
-
-    private static String formatDuration(double duration) {
-        int minutes = (int) duration / 60;
-        int seconds = (int) duration % 60;
-        return String.format("%d:%02d", minutes, seconds);
-    }
-	
+		
 	
 }

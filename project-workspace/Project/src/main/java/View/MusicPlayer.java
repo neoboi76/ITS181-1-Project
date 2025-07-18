@@ -1,6 +1,7 @@
 package View;
 
 import Controller.MusicController;
+import Model.Database;
 import javafx.event.ActionEvent;
 
 import java.awt.*;
@@ -17,8 +18,10 @@ public class MusicPlayer {
 	
 	private SongPanel songPanel;
 	private TablePanel tablePanel;
+	private ControlPanel controlPanel;
 	private JFileChooser fileChooser;
 	private MusicController controller;
+	private Database database;
 	private static JFrame frm;
 	
 	public MusicPlayer() {
@@ -29,10 +32,13 @@ public class MusicPlayer {
 		frm.setResizable(false);
 		
 		songPanel = new SongPanel();
-		tablePanel = new TablePanel();
 		fileChooser = new JFileChooser();
 		fileChooser.addChoosableFileFilter(new SongFileFilter());
 		controller = new MusicController();
+		database = new Database();
+		controlPanel = new ControlPanel();
+		
+		tablePanel = new TablePanel(controller, controlPanel, songPanel);
 		
 		tablePanel.loadSongs();
 		
@@ -49,6 +55,7 @@ public class MusicPlayer {
 		
 		frm.add(songPanel, BorderLayout.WEST);
 		frm.add(tablePanel, BorderLayout.CENTER);
+		frm.add(controlPanel, BorderLayout.SOUTH);
 		
 		frm.setVisible(true);
 		
@@ -88,7 +95,7 @@ public class MusicPlayer {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) e.getSource();
 				
-				//songPanel.setVisible(menuItem.isSelected());
+				songPanel.setVisible(menuItem.isSelected());
 				
 			}
 			
@@ -108,11 +115,12 @@ public class MusicPlayer {
 				if (fileChooser.showOpenDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					try {
 						controller.loadFile(fileChooser.getSelectedFile());
+						tablePanel.loadSongs();
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					tablePanel.update();
+					tablePanel.loadSongs();
 					
 				}
 				
@@ -133,7 +141,7 @@ public class MusicPlayer {
 				if (fileChooser.showSaveDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					try {
 						controller.saveFile(fileChooser.getSelectedFile());
-						tablePanel.update();
+						tablePanel.loadSongs();
 						
 					} catch (Exception ex) {
 						JOptionPane.showConfirmDialog(frm, ex.getStackTrace(), "Error", JOptionPane.ERROR_MESSAGE);

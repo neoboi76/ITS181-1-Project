@@ -5,6 +5,8 @@ import javax.swing.SwingUtilities;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import javafx.embed.swing.JFXPanel;
+import Model.Database;
 import Model.SongEntity;
 
 public class App {
@@ -13,6 +15,9 @@ public class App {
     private static EntityManager em;
 	
     public static void main(String[] args) {
+    	
+    	 new JFXPanel(); // This initializes the JavaFX runtime.
+    	
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run() {

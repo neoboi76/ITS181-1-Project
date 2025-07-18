@@ -16,6 +16,8 @@ public class MusicController {
 	
 	Database db = new Database();
 	
+	PlayerThread player;
+	
 	public List<SongEntity> getAllSongs() {
 		return db.getAllSongs();
 	}
@@ -50,13 +52,24 @@ public class MusicController {
 	}
 	
     public void loadFile(File file) throws IOException {
-    	if (Utils.getFileExtension(file) == songExtension) {
+    	
+    	System.out.println("Hello");
+    	
+    	db.loadSongMp3(file);
+    	
+    	/*
+    	if (Utils.getFileExtension(file) == "mp3") {
+    		//System.out.println("Hello");
 			db.loadSongMp3(file);
 		}
 		else if (Utils.getFileExtension(file) == databaseExtension) {
 			db.loadSongDatabase(file);
-		}
+		}*/
     	  	
+    }
+    
+    public SongEntity getSongById(Long id) {
+    	return db.getSongById(id);
     }
 
     

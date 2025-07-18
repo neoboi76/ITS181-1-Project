@@ -5,10 +5,6 @@ import java.io.File;
 
 public class PlayerThread {
 	
-	  static {
-	    	new javafx.embed.swing.JFXPanel(); 	    }
-
-
     private MediaPlayer mediaPlayer;
     private String fileLocation;
     private boolean loop;
@@ -16,10 +12,10 @@ public class PlayerThread {
     public PlayerThread(String fileLocation, boolean loop) {
         this.fileLocation = fileLocation;
         this.loop = loop;
-        initMediaPlayer();
+        MediaPlayer();
     }
 
-    private void initMediaPlayer() {
+    private void MediaPlayer() {
         Media media = new Media(new File(fileLocation).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
@@ -33,7 +29,7 @@ public class PlayerThread {
 
     public void play() {
         if (mediaPlayer == null) {
-            initMediaPlayer();
+            MediaPlayer();
         }
         mediaPlayer.play();
     }

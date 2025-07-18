@@ -38,8 +38,8 @@ public class SongEntityTableModel extends AbstractTableModel {
 			case 0: return song.getId();
 			case 1: return song.getArtist();
 			case 2: return song.getTitle();
-			case 3: return song.getDuration();
-			case 4: return song.getAlbum();
+			case 3: return song.getAlbum();
+			case 4: return song.getDuration();
 		}
 		
 		return null;
