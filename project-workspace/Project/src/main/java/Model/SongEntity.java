@@ -15,29 +15,29 @@ public class SongEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	//@Column(nullable = false, unique = true)
+	@Column(nullable = false, unique = true)
 	private String title;
 	
-	//@Column(nullable = false)
+	@Column(nullable = false)
 	private String artist;
 	
-	//@Column(nullable = false)
+	@Column(nullable = false)
 	private String album;
 	
-	//@Column(nullable = false)
-	private double duration;
+	@Column(nullable = false)
+	private String duration;
 	
-	//@Lob
-	//@Column(nullable = false)
+	@Lob
+	@Column(nullable = false)
 	private String lyrics;
 	
 	@Column(name = "audio_path", nullable = false)
 	private String audioPath;
 	
-	//@Column(name = "image_path")
+	@Column(name = "image_path")
 	private String imagePath;
 	
-	public SongEntity(String title, String artist, String album, double duration, String lyrics, String audioPath, String imagePath) {
+	public SongEntity(String title, String artist, String album, String duration, String lyrics, String audioPath, String imagePath) {
 
 		super();
 		this.title = title;
@@ -94,11 +94,11 @@ public class SongEntity implements Serializable {
 		this.lyrics = lyrics;
 	}
 	
-	public double getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 	
-	public void setDuration(double duration) {
+	public void setDuration(String duration) {
 		this.duration = duration;
 	}
 	

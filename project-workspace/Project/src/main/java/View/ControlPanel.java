@@ -30,7 +30,7 @@ public class ControlPanel extends JPanel {
         btnStop.setEnabled(false);
         btnPlayPause.setEnabled(false);
 
-        setPreferredSize(new Dimension(200, 150));
+        setPreferredSize(new Dimension(100, 100));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -49,7 +49,7 @@ public class ControlPanel extends JPanel {
         });
 
         btnStop.addActionListener(e -> {
-            if (player != null) {
+            if (isPlaying) {
                 player.stop();
                 stopSeekUpdater();
                 btnPlayPause.setText("Play");
@@ -130,7 +130,14 @@ public class ControlPanel extends JPanel {
     public void enableControls(boolean enabled) {
         btnPlayPause.setEnabled(enabled);
         btnStop.setEnabled(enabled);
-        // Any other buttons (Next, Prev, etc.)
+
     }
+
+
+
+	public Object getPlayer() {
+		// TODO Auto-generated method stub
+		return player;
+	}
 
 }

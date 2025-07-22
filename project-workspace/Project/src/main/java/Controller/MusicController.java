@@ -8,6 +8,7 @@ import Model.Database;
 import Model.SongEntity;
 import View.SongEvent;
 import View.Utils;
+import javafx.application.Platform;
 
 public class MusicController {
 	
@@ -27,7 +28,7 @@ public class MusicController {
 		String title = e.getTitle();
 		String artist = e.getArtist();
 		String album = e.getAlbum();
-		double duration = e.getDuration();
+		String duration = e.getDuration();
 		String lyrics = e.getLyrics();
 		String audioPath = e.getAudioPath();
 		String imagePath = e.getImagePath();
@@ -41,32 +42,24 @@ public class MusicController {
 		//Coming soon. . .
 		
 	}
+	/*
 	
 	public void saveFile(File file) {
 		if (Utils.getFileExtension(file) == songExtension) {
-			db.saveSongMp3(file);
+			//db.saveSongMp3(file);
 		}
 		else if (Utils.getFileExtension(file) == databaseExtension) {
-			db.saveSongDatabase(file);
+			//db.saveSongDatabase(file);
 		}
-	}
+	}*/
 	
-    public void loadFile(File file) throws IOException {
-    	
-    	System.out.println("Hello");
-    	
-    	db.loadSongMp3(file);
-    	
-    	/*
-    	if (Utils.getFileExtension(file) == "mp3") {
-    		//System.out.println("Hello");
-			db.loadSongMp3(file);
-		}
-		else if (Utils.getFileExtension(file) == databaseExtension) {
-			db.loadSongDatabase(file);
-		}*/
-    	  	
-    }
+	public void loadFile(File file, Runnable onFinish) {
+	    new Thread(() -> {
+	        db.loadSongMp3(file); // commits song
+	        Platform.runLater(onFinish); // runs loadSongs after commit
+	    }).start();
+	}
+
     
     public SongEntity getSongById(Long id) {
     	return db.getSongById(id);

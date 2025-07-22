@@ -27,9 +27,16 @@ public class Utils {
 	}
     
     public static String formatDuration(double duration) {
-        int minutes = (int) duration / 60;
-        int seconds = (int) duration % 60;
+        int minutes = (int) duration;
+        int seconds = (int) Math.round((duration - minutes) * 60);
+
+        // Handle rounding cases (e.g., 2.999 rounds to 3:00)
+        if (seconds == 60) {
+            minutes += 1;
+            seconds = 0;
+        }
+
         return String.format("%d:%02d", minutes, seconds);
     }
-    
+
 }

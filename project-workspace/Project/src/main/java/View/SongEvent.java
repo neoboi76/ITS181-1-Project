@@ -14,7 +14,7 @@ public class SongEvent extends EventObject {
 	
 	private String album;
 	
-	private double duration;
+	private String duration;
 
 	private String lyrics;
 	
@@ -22,7 +22,7 @@ public class SongEvent extends EventObject {
 
 	private String imagePath;
 	
-	public SongEvent(Object source, String title, String artist, String album, double duration, String lyrics, String audioPath, String imagePath) {
+	public SongEvent(Object source, String title, String artist, String album, String duration, String lyrics, String audioPath, String imagePath) {
 
 		super(source);
 		this.id = id;
@@ -76,11 +76,11 @@ public class SongEvent extends EventObject {
 		this.album = album;
 	}
 	
-	public double getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 	
-	public void setDuration(double duration) {
+	public void setDuration(String duration) {
 		this.duration = duration;
 	}
 	

@@ -48,11 +48,8 @@ public class SongPanel extends JPanel {
         add(scroll, BorderLayout.SOUTH);
     }
 
-    /**
-     * Call this whenever the user selects a new song.
-     * @param song the SongEntity to display (or null to clear)
-     */
-    public void setSong(SongEntity song) {
+   
+    public void setSong(SongEvent song) {
         if (song == null) {
             artistLabel.setText("Artist: —");
             coverLabel.setIcon(null);

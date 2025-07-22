@@ -17,22 +17,23 @@ import javax.swing.event.ListSelectionListener;
 import Controller.MusicController;
 import Controller.PlayerThread;
 import Model.SongEntity;
+import Model.Database;
 
 public class TablePanel extends JPanel{
 
 	private JTable table;
 	private SongEntityTableModel tableModel;
 	private MusicController controller;
-	private ControlPanel btnControl;
 	private PlayerThread player;
 	private SongPanel songPanel;
 	private ControlPanel controlPanel;
+	private Database db;
 	
-	public TablePanel(MusicController controller, ControlPanel controlPanel, SongPanel songPanel) {
+	public TablePanel(MusicController controller, ControlPanel controlPanel) {
 	    this.controller = controller;
 	    this.controlPanel = controlPanel;
-	    this.songPanel = songPanel;
 
+	    db = new Database();
 		
 		tableModel = new SongEntityTableModel();
 		table = new JTable(tableModel);
@@ -72,19 +73,28 @@ public class TablePanel extends JPanel{
 		                    JOptionPane.showMessageDialog(null, "Could not determine selected song ID.");
 		                    return;
 		                }
+		                
+		                
+		                if (player != null) {
+		                    player.stop(); // this should safely stop playback
+		                    controlPanel.btnPlayPause.setText("Play");
+		                    controlPanel.enableControls(false);
+		                }
 
-		                // Get the full song from database
+		                
+		               
 		                SongEntity song = controller.getSongById(id);
-
-		                // Update the song panel visually
-		                songPanel.setSong(song);
-
-		                // Create player and send to control panel
-		                player = new PlayerThread(song.getAudioPath(), false); // don't loop initially
+		      
+		                player = new PlayerThread(song.getAudioPath(), false); 
+		                
+		                
 		                controlPanel.setPlayer(player);
-
-		                // Enable buttons
+     
 		                controlPanel.enableControls(true);
+		            }
+		            
+		            else {
+		            	controlPanel.enableControls(false);
 		            }
 		        }
 		    }
@@ -100,12 +110,22 @@ public class TablePanel extends JPanel{
 	
 	public void loadSongs() {
 	    List<SongEntity> songs = controller.getAllSongs();
-	    System.out.println("Songs from DB: " + songs.size()); // 👈 DEBUG
+	    System.out.println("Songs from DB: " + songs.size()); 
 	    for (SongEntity s : songs) {
-	        System.out.println(s.getTitle()); // Optional: see actual entries
+	        System.out.println(s.getTitle()); 
 	    }
+	    
+
 	    tableModel.setData(songs);
-	    tableModel.fireTableDataChanged();
+	    
+	    
+	    System.out.println("Row count in table: " + table.getRowCount());
+
+	  
+	}
+	
+	public SongEntityTableModel getTableModel() {
+		return tableModel;
 	}
 
 	

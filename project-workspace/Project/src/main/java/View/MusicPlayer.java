@@ -1,28 +1,31 @@
 package View;
 
 import Controller.MusicController;
-import Model.Database;
+import Controller.PlayerThread;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.WindowAdapter;
 import java.io.IOException;
 
 import javax.swing.*;
 
 import com.sun.glass.events.KeyEvent;
+import com.sun.glass.events.WindowEvent;
 
 
 public class MusicPlayer {
 	
 	private SongPanel songPanel;
-	private TablePanel tablePanel;
+	private static TablePanel tablePanel;
 	private ControlPanel controlPanel;
 	private JFileChooser fileChooser;
 	private MusicController controller;
-	private Database database;
 	private static JFrame frm;
+	private PlayerThread player;
 	
 	public MusicPlayer() {
 		
@@ -35,32 +38,38 @@ public class MusicPlayer {
 		fileChooser = new JFileChooser();
 		fileChooser.addChoosableFileFilter(new SongFileFilter());
 		controller = new MusicController();
-		database = new Database();
 		controlPanel = new ControlPanel();
 		
-		tablePanel = new TablePanel(controller, controlPanel, songPanel);
-		
-		tablePanel.loadSongs();
+		tablePanel = new TablePanel(controller, controlPanel);
 		
 		frm.setJMenuBar(createMenuBar());
 		
+		/*
 		songPanel.setSongListener(new SongListener() {
 			
 			public void songEventOccured(SongEvent e) {
-				controller.addSong(e);
+				songPanel.setSong(e);
 				tablePanel.loadSongs();
 			}
 			
-		});
+		});*/
+		
 		
 		frm.add(songPanel, BorderLayout.WEST);
 		frm.add(tablePanel, BorderLayout.CENTER);
 		frm.add(controlPanel, BorderLayout.SOUTH);
-		
-		frm.setVisible(true);
+		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		
 		tablePanel.loadSongs();
 		
+		frm.setVisible(true);
+	
+		
+	}
+	
+	public TablePanel getTablePanel() {
+		return tablePanel;
 	}
 	
 	private JMenuBar createMenuBar() {
@@ -113,22 +122,23 @@ public class MusicPlayer {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				
 				if (fileChooser.showOpenDialog(frm) == JFileChooser.APPROVE_OPTION) {
-					try {
-						controller.loadFile(fileChooser.getSelectedFile());
-						tablePanel.loadSongs();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					tablePanel.loadSongs();
-					
+					controller.loadFile(fileChooser.getSelectedFile(), () -> {
+					    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
+					});
+
+
+					System.out.println("File loaded");
+					System.out.println("yess");
+
 				}
+				
 				
 				else {
 					JOptionPane.showMessageDialog(frm, "Could not load data from file", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				
 			}
+			
 			
 			
 			
@@ -140,7 +150,7 @@ public class MusicPlayer {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				if (fileChooser.showSaveDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					try {
-						controller.saveFile(fileChooser.getSelectedFile());
+						//controller.saveFile(fileChooser.getSelectedFile());
 						tablePanel.loadSongs();
 						
 					} catch (Exception ex) {
