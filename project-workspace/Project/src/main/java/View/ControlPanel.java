@@ -17,20 +17,27 @@ public class ControlPanel extends JPanel {
     private PlayerThread player;
     private MusicController controller;
     private Database database;
-
+    private Long id;
     private JSlider seekSlider;
     private Timer seekTimer;
     private boolean isPlaying = false;
+    private TablePanel tablePanel;
 
-    public JButton btnPlayPause, btnStop;
+    public JButton btnPlayPause, btnStop, btnDelete;
 
-    public ControlPanel() {
+    public ControlPanel(MusicController controller, TablePanel tablePanel) {
+    	
+    	this.controller = controller;
+    	this.tablePanel = tablePanel;
+    	
         btnPlayPause = new JButton("Play");
         btnStop = new JButton("Stop");
+        btnDelete = new JButton("Delete");
         btnStop.setEnabled(false);
         btnPlayPause.setEnabled(false);
+        btnDelete.setEnabled(false);
 
-        setPreferredSize(new Dimension(100, 100));
+        setPreferredSize(new Dimension(40, 70));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -55,6 +62,42 @@ public class ControlPanel extends JPanel {
                 btnPlayPause.setText("Play");
                 isPlaying = false;
             }
+        });
+        
+        btnDelete.addActionListener(e -> {
+        	
+        	
+	    	int result = JOptionPane.showConfirmDialog(
+	    	        null,
+	    	        "Are you sure you want to delete this song?",
+	    	        "Confirm Deletion",
+	    	        JOptionPane.YES_NO_OPTION,
+	    	        JOptionPane.WARNING_MESSAGE
+	    	);
+
+	    	if (result == JOptionPane.YES_OPTION) {
+	    		if (isPlaying) {
+	        		player.stop();
+	        		stopSeekUpdater();
+	        		btnPlayPause.setText("Play");
+	        		controller.deleteSong(id);
+	        		tablePanel.loadSongs();
+	        	}
+	        	
+	        	else {
+	        		stopSeekUpdater();
+	        		controller.deleteSong(id);
+	        		tablePanel.loadSongs();
+	        	}
+	        	
+	    		
+	    	}
+	    	
+	    	else {
+	    	    System.out.println("Deletion canceled.");
+	    	}
+        	
+        	
         });
 
         seekSlider = new JSlider(0, 100, 0);
@@ -85,6 +128,8 @@ public class ControlPanel extends JPanel {
         add(btnPlayPause);
         add(Box.createHorizontalStrut(10));
         add(btnStop);
+        add(Box.createHorizontalStrut(10));
+        add(btnDelete);
         add(Box.createHorizontalStrut(20));
         add(new JLabel("Seek:"));
         add(seekSlider);
@@ -130,13 +175,18 @@ public class ControlPanel extends JPanel {
     public void enableControls(boolean enabled) {
         btnPlayPause.setEnabled(enabled);
         btnStop.setEnabled(enabled);
+        btnDelete.setEnabled(enabled);
 
+    }
+    
+    public void setId(Long id) {
+    	this.id = id;
     }
 
 
 
 	public Object getPlayer() {
-		// TODO Auto-generated method stub
+
 		return player;
 	}
 

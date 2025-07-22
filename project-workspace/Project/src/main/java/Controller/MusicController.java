@@ -38,26 +38,33 @@ public class MusicController {
 		
 	}
 	
-	public void deleteSong(SongEvent e) {
-		//Coming soon. . .
+	public void deleteSong(Long id) {
+		
+		db.deleteSongMp3(id);
 		
 	}
-	/*
 	
+	/*
 	public void saveFile(File file) {
-		if (Utils.getFileExtension(file) == songExtension) {
-			//db.saveSongMp3(file);
-		}
-		else if (Utils.getFileExtension(file) == databaseExtension) {
-			//db.saveSongDatabase(file);
+
+		else if (databaseExtension.equalsIgnoreCase(Utils.getFileExtension(file))) {
+			db.saveSongDatabase(file);
 		}
 	}*/
 	
 	public void loadFile(File file, Runnable onFinish) {
-	    new Thread(() -> {
-	        db.loadSongMp3(file); // commits song
-	        Platform.runLater(onFinish); // runs loadSongs after commit
-	    }).start();
+
+		if (Utils.getFileExtension(file) == "mp3") {
+			new Thread(() -> {
+		        db.loadSongMp3(file); 
+		        Platform.runLater(onFinish); 
+		    }).start();
+		}
+		
+		else if (databaseExtension.equalsIgnoreCase(Utils.getFileExtension(file))) {
+			//db.loadSongDatabase(file);
+		}
+
 	}
 
     

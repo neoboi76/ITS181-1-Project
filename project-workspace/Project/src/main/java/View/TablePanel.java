@@ -28,10 +28,11 @@ public class TablePanel extends JPanel{
 	private SongPanel songPanel;
 	private ControlPanel controlPanel;
 	private Database db;
+	private SongListener songListener;
 	
-	public TablePanel(MusicController controller, ControlPanel controlPanel) {
+	public TablePanel(MusicController controller, SongPanel songPanel) {
 	    this.controller = controller;
-	    this.controlPanel = controlPanel;
+	    this.songPanel = songPanel;
 
 	    db = new Database();
 		
@@ -46,7 +47,6 @@ public class TablePanel extends JPanel{
 		table.getTableHeader().setReorderingAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setSelectionBackground(new Color(200, 220, 255));
-		//table.setTableHeader(null);
 
 		table.setFillsViewportHeight(true);
 		JScrollPane scp = new JScrollPane(table);
@@ -76,17 +76,20 @@ public class TablePanel extends JPanel{
 		                
 		                
 		                if (player != null) {
-		                    player.stop(); // this should safely stop playback
+		                    player.stop(); 
 		                    controlPanel.btnPlayPause.setText("Play");
 		                    controlPanel.enableControls(false);
 		                }
 
 		                
 		               
-		                SongEntity song = controller.getSongById(id);
+		                SongEntity song = controller.getSongById(id);		                		            
+		                
+		                songPanel.setSong(song);
 		      
 		                player = new PlayerThread(song.getAudioPath(), false); 
 		                
+		                controlPanel.setId(song.getId());
 		                
 		                controlPanel.setPlayer(player);
      
@@ -128,5 +131,11 @@ public class TablePanel extends JPanel{
 		return tableModel;
 	}
 
+	public void setSongListener(SongListener listener) {
+    	this.songListener = listener;
+    }
 	
+	public void setControlPanel(ControlPanel controlPanel)  {
+		this.controlPanel = controlPanel;
+	}
 }

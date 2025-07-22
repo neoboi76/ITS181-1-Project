@@ -39,36 +39,14 @@ public class PlayerThread {
                 mediaPlayer.seek(mediaPlayer.getStartTime());
                 mediaPlayer.play();
             });
+            
+        }
+        
+        else {
+        	mediaPlayer.stop();
         }
  
-        /*
-        Platform.runLater(() -> {
-    		
-        	mediaPlayer.setOnReady(() -> {
-            	
-        		System.out.println("Nigger");
-        		
-            	File file = new File(fileLocation);
-            	
-            	String title = Utils.removeExtension(file.getName());
-            	String artist = "Boa";
-            	String album = "Based";
-            	double duration = 2.25;
-            	String lyrics = null;
-            	String audioPath = fileLocation;
-            	String imagePath = null;
-            	
-            	System.out.println(audioPath);
-            	
-            	SongEvent song = new SongEvent(this, title, artist, album, duration, lyrics, audioPath, imagePath);
-            	
-            	controller.addSong(song); 
-            	
-            	
-            });
-    		
-    	});*/
-
+        
     }
 
     public void play() {

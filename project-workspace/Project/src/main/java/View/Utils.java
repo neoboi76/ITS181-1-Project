@@ -12,7 +12,7 @@ public class Utils {
 	    if (lastDot > 0 && lastDot < name.length() - 1) {
 	        return name.substring(lastDot + 1).toLowerCase(); // returns "mp3", "saf", etc.
 	    }
-	    return null; // no extension found
+	    return null; 
 	}
 
     
@@ -26,17 +26,76 @@ public class Utils {
 	    return value != null ? value.toString() : "Unknown";
 	}
     
-    public static String formatDuration(double duration) {
-        int minutes = (int) duration;
-        int seconds = (int) Math.round((duration - minutes) * 60);
-
-        // Handle rounding cases (e.g., 2.999 rounds to 3:00)
-        if (seconds == 60) {
-            minutes += 1;
-            seconds = 0;
-        }
-
-        return String.format("%d:%02d", minutes, seconds);
+    public static String formatDuration(double seconds) {
+        int totalSeconds = (int) Math.round(seconds);
+        int mins = totalSeconds / 60;
+        int secs = totalSeconds % 60;
+        return String.format("%d:%02d", mins, secs);
     }
+
+
+    
+    public static String getImagePath(String fileLocation) {
+    	
+    	File file = new File(fileLocation);
+    	File folder = file.getParentFile();
+    	
+    	if (folder != null && folder.isDirectory()) {
+    		
+    		File[] files = folder.listFiles();
+    		
+    		if (files != null) {
+    			
+    			for (File f : files) {
+    				
+    				if ("png".equalsIgnoreCase(getFileExtension(f))
+    						|| "jpg".equalsIgnoreCase(getFileExtension(f))|| "jpeg".equalsIgnoreCase(getFileExtension(f))) {
+    					
+    					return f.getAbsolutePath();
+    					
+    				}
+    					
+    			}
+    			
+    		
+    			
+    		}
+
+    	}
+    	
+		return "No path found";
+    	
+    }
+    
+
+	public static String getLyricsPath(String fileLocation) {
+		File file = new File(fileLocation);
+    	File folder = file.getParentFile();
+    	
+    	if (folder != null && folder.isDirectory()) {
+    		
+    		File[] files = folder.listFiles();
+    		
+    		if (files != null) {
+    			
+    			for (File f : files) {
+    				
+    				if ("txt".equalsIgnoreCase(getFileExtension(f))) {
+    					
+    					return f.getAbsolutePath();
+    					
+    				}
+    					
+    			}
+    			
+    		
+    			
+    		}
+
+    	}
+    	
+		return "No path found";
+    	
+	}
 
 }

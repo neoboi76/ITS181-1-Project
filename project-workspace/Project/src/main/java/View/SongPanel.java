@@ -8,26 +8,21 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.IOException;
 
-/**
- * SongPanel.java
- *
- * Placed in BorderLayout.WEST.  
- * Shows the selected song's Artist, Album Cover, and Lyrics.
- *
- * Usage (in your existing selection listener):
- *   SongEntity s = controller.getSongById(selectedId);
- *   songPanel.setSong(s);
- */
+
+
 public class SongPanel extends JPanel {
     private final JLabel artistLabel  = new JLabel("Artist: —", SwingConstants.CENTER);
     private final JLabel coverLabel   = new JLabel();               // displays album art
     private final JTextArea lyricsArea = new JTextArea();
-    private SongListener songListener;
+   
 
     public SongPanel() {
         setLayout(new BorderLayout(8,8));
-        setPreferredSize(new Dimension(260, 0));  
+        setPreferredSize(new Dimension(350, 0));  
         setBorder(new TitledBorder("Now Playing"));
 
         // Artist at top
@@ -49,7 +44,7 @@ public class SongPanel extends JPanel {
     }
 
    
-    public void setSong(SongEvent song) {
+    public void setSong(SongEntity song) {
         if (song == null) {
             artistLabel.setText("Artist: —");
             coverLabel.setIcon(null);
@@ -74,16 +69,22 @@ public class SongPanel extends JPanel {
         // 3) Lyrics (load from SongEntity.getLyrics())
         //    If you store lyrics directly in the entity, just setText(song.getLyrics()).
         //    If you store a path, read the file here:
-        if (song.getLyrics() != null) {
-            // assume getLyrics() returns the full lyrics text
-            lyricsArea.setText(song.getLyrics());
-        } else {
-            lyricsArea.setText("");
+        try {
+            String lyricsPath = song.getLyrics();
+            if (lyricsPath != null) {
+                String lyrics = new String(Files.readAllBytes(Paths.get(lyricsPath)));
+                lyricsArea.setText(lyrics);
+            } else {
+                lyricsArea.setText("");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            lyricsArea.setText("[Error loading lyrics]");
         }
+
         lyricsArea.setCaretPosition(0);
     }
     
-    public void setSongListener(SongListener listener) {
-    	this.songListener = listener;
-    }
+   
+    
 }

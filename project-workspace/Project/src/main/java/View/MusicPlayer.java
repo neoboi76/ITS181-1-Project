@@ -17,6 +17,8 @@ import com.sun.glass.events.KeyEvent;
 import com.sun.glass.events.WindowEvent;
 
 
+
+
 public class MusicPlayer {
 	
 	private SongPanel songPanel;
@@ -31,28 +33,30 @@ public class MusicPlayer {
 		
 		frm = new JFrame("Music Player");
 		frm.setLayout(new BorderLayout());
-		frm.setSize(1050, 450);
-		frm.setResizable(false);
+		frm.setSize(1250, 700);
+	//	frm.setResizable(false);
 		
-		songPanel = new SongPanel();
+		
 		fileChooser = new JFileChooser();
 		fileChooser.addChoosableFileFilter(new SongFileFilter());
 		controller = new MusicController();
-		controlPanel = new ControlPanel();
+		songPanel = new SongPanel();
+		tablePanel = new TablePanel(controller, songPanel);
 		
-		tablePanel = new TablePanel(controller, controlPanel);
+		controlPanel = new ControlPanel(controller, tablePanel);
+		
+		tablePanel.setControlPanel(controlPanel);
 		
 		frm.setJMenuBar(createMenuBar());
 		
-		/*
-		songPanel.setSongListener(new SongListener() {
+		
+		tablePanel.setSongListener(new SongListener() {
 			
 			public void songEventOccured(SongEvent e) {
-				songPanel.setSong(e);
 				tablePanel.loadSongs();
 			}
 			
-		});*/
+		});
 		
 		
 		frm.add(songPanel, BorderLayout.WEST);
