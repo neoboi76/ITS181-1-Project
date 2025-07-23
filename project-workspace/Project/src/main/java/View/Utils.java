@@ -10,7 +10,7 @@ public class Utils {
 	    String name = file.getName();
 	    int lastDot = name.lastIndexOf('.');
 	    if (lastDot > 0 && lastDot < name.length() - 1) {
-	        return name.substring(lastDot + 1).toLowerCase(); // returns "mp3", "saf", etc.
+	        return name.substring(lastDot + 1).toLowerCase(); 
 	    }
 	    return null; 
 	}
@@ -40,6 +40,8 @@ public class Utils {
     	File file = new File(fileLocation);
     	File folder = file.getParentFile();
     	
+    	File placeholder = new File("C:\\Users\\Timbo\\OneDrive\\Desktop\\Documents\\Test\\placeholder.jpg");
+    	
     	if (folder != null && folder.isDirectory()) {
     		
     		File[] files = folder.listFiles();
@@ -53,6 +55,10 @@ public class Utils {
     					
     					return f.getAbsolutePath();
     					
+    				}
+    				
+    				else {
+    					return placeholder.getAbsolutePath();
     				}
     					
     			}

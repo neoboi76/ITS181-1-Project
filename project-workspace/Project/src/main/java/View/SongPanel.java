@@ -85,6 +85,11 @@ public class SongPanel extends JPanel {
         lyricsArea.setCaretPosition(0);
     }
     
+    public void clearSongPanel() {
+    	artistLabel.setText("Artist: —");
+    	coverLabel.setIcon(null);
+    	lyricsArea.setText("");
+    }
    
     
 }

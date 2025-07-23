@@ -22,13 +22,15 @@ public class ControlPanel extends JPanel {
     private Timer seekTimer;
     private boolean isPlaying = false;
     private TablePanel tablePanel;
+    private SongPanel songPanel;
 
     public JButton btnPlayPause, btnStop, btnDelete;
 
-    public ControlPanel(MusicController controller, TablePanel tablePanel) {
+    public ControlPanel(MusicController controller, TablePanel tablePanel, SongPanel songPanel) {
     	
     	this.controller = controller;
     	this.tablePanel = tablePanel;
+    	this.songPanel = songPanel;
     	
         btnPlayPause = new JButton("Play");
         btnStop = new JButton("Stop");
@@ -81,12 +83,14 @@ public class ControlPanel extends JPanel {
 	        		stopSeekUpdater();
 	        		btnPlayPause.setText("Play");
 	        		controller.deleteSong(id);
+	        		songPanel.clearSongPanel();
 	        		tablePanel.loadSongs();
 	        	}
 	        	
 	        	else {
 	        		stopSeekUpdater();
 	        		controller.deleteSong(id);
+	        		songPanel.clearSongPanel();
 	        		tablePanel.loadSongs();
 	        	}
 	        	

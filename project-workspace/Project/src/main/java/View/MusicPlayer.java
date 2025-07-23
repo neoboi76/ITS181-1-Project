@@ -43,7 +43,7 @@ public class MusicPlayer {
 		songPanel = new SongPanel();
 		tablePanel = new TablePanel(controller, songPanel);
 		
-		controlPanel = new ControlPanel(controller, tablePanel);
+		controlPanel = new ControlPanel(controller, tablePanel, songPanel);
 		
 		tablePanel.setControlPanel(controlPanel);
 		

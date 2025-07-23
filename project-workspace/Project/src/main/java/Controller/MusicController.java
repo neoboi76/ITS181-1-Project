@@ -54,16 +54,19 @@ public class MusicController {
 	
 	public void loadFile(File file, Runnable onFinish) {
 
-		if (Utils.getFileExtension(file) == "mp3") {
+		
+		if ("mp3".equalsIgnoreCase(Utils.getFileExtension(file))) {
+			
+		
 			new Thread(() -> {
 		        db.loadSongMp3(file); 
 		        Platform.runLater(onFinish); 
 		    }).start();
 		}
 		
-		else if (databaseExtension.equalsIgnoreCase(Utils.getFileExtension(file))) {
+		/*else (databaseExtension.equalsIgnoreCase(Utils.getFileExtension(file))) {
 			//db.loadSongDatabase(file);
-		}
+		} */
 
 	}
 
