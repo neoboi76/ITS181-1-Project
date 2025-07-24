@@ -24,7 +24,7 @@ public class ControlPanel extends JPanel {
     private TablePanel tablePanel;
     private SongPanel songPanel;
 
-    public JButton btnPlayPause, btnStop, btnDelete;
+    public JButton btnPlayPause, btnStop, btnDelete, btnClear;
 
     public ControlPanel(MusicController controller, TablePanel tablePanel, SongPanel songPanel) {
     	
@@ -35,9 +35,18 @@ public class ControlPanel extends JPanel {
         btnPlayPause = new JButton("Play");
         btnStop = new JButton("Stop");
         btnDelete = new JButton("Delete");
+        btnClear = new JButton("Clear");
         btnStop.setEnabled(false);
         btnPlayPause.setEnabled(false);
         btnDelete.setEnabled(false);
+        
+        if (tablePanel == null && tablePanel.getTableModel().getRowCount() == 0) {
+        	btnClear.setEnabled(false);
+        }
+        
+        else {
+        	btnClear.setEnabled(true);
+        }
 
         setPreferredSize(new Dimension(40, 70));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -103,6 +112,34 @@ public class ControlPanel extends JPanel {
         	
         	
         });
+        
+        btnClear.addActionListener(e -> {
+        	
+        	int result = JOptionPane.showConfirmDialog(
+	    	        null,
+	    	        "Are you sure you want clear all Songs?",
+	    	        "Confirm Deletion",
+	    	        JOptionPane.YES_NO_OPTION,
+	    	        JOptionPane.WARNING_MESSAGE
+	    	);
+
+	    	if (result == JOptionPane.YES_OPTION) {
+	    		
+	    		if (tablePanel != null && tablePanel.getTableModel().getRowCount() > 0) {
+	        		if (player != null) {
+	        			player.stopPlayback();
+		        		stopSeekUpdater();
+		        		btnPlayPause.setText("Play");
+	        		}
+	        		controller.deleteAll();
+	        		songPanel.clearSongPanel();
+	        		tablePanel.loadSongs();
+	        		disableControls(true);
+	        	}
+	    		
+	    	}
+        	
+        });
 
         seekSlider = new JSlider(0, 100, 0);
         seekSlider.setPreferredSize(new Dimension(300, 20));
@@ -134,6 +171,8 @@ public class ControlPanel extends JPanel {
         add(btnStop);
         add(Box.createHorizontalStrut(10));
         add(btnDelete);
+        add(Box.createHorizontalStrut(10));
+        add(btnClear);
         add(Box.createHorizontalStrut(20));
         add(new JLabel("Seek:"));
         add(seekSlider);
@@ -177,9 +216,22 @@ public class ControlPanel extends JPanel {
     }
     
     public void enableControls(boolean enabled) {
-        btnPlayPause.setEnabled(enabled);
-        btnStop.setEnabled(enabled);
-        btnDelete.setEnabled(enabled);
+        if (enabled == true) {
+        	btnPlayPause.setEnabled(enabled);
+            btnStop.setEnabled(enabled);
+            btnDelete.setEnabled(enabled);
+        }
+
+    }
+    
+    public void disableControls(boolean disabled) {
+        
+    	if (disabled == true) {
+    		btnPlayPause.setEnabled(false);
+            btnStop.setEnabled(false);
+            btnDelete.setEnabled(false);
+            btnClear.setEnabled(false);
+    	}
 
     }
     

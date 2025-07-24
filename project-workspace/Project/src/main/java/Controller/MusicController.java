@@ -89,5 +89,8 @@ public class MusicController {
     	return db.getSongById(id);
     }
 
+    public void deleteAll() {
+    	db.clearDB();
+    }
     
 }

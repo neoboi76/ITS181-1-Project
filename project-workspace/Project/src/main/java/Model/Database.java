@@ -2,6 +2,7 @@ package Model;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -64,6 +65,7 @@ public class Database {
 	
 	private EntityManagerFactory emf;
     private EntityManager em;
+    private EntityTransaction tx;
     private MusicController controller;
     
     private List<SongEntity> music;
@@ -258,6 +260,15 @@ public class Database {
     	return em.find(SongEntity.class, id);
     }
 	
+    public void clearDB() {
+    	
+    	tx = em.getTransaction();
+    	
+    	tx.begin();
+    	em.createQuery("DELETE FROM SongEntity").executeUpdate();
+    	tx.commit();
+    	
+    }
     
 }
 
