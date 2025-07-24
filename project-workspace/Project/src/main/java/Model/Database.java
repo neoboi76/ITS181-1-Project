@@ -265,7 +265,21 @@ public class Database {
     	tx = em.getTransaction();
     	
     	tx.begin();
-    	em.createQuery("DELETE FROM SongEntity").executeUpdate();
+    	em.createNativeQuery("DROP TABLE IF EXISTS songs").executeUpdate();
+
+    	em.createNativeQuery(
+    	    "CREATE TABLE songs (" +
+    	    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+    	    "title VARCHAR(255) NOT NULL UNIQUE, " +
+    	    "artist VARCHAR(255) NOT NULL, " +
+    	    "album VARCHAR(255) NOT NULL, " +
+    	    "duration VARCHAR(255) NOT NULL, " +
+    	    "lyrics TEXT NOT NULL, " +
+    	    "audio_path VARCHAR(255) NOT NULL, " +
+    	    "image_path VARCHAR(255)" +
+    	    ")"
+    	).executeUpdate();
+
     	tx.commit();
     	
     }
