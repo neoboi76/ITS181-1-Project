@@ -50,9 +50,6 @@ public class PlayerThread {
     }
 
     public void play() {
-        if (mediaPlayer == null) {
-            MediaPlayer();
-        }
         mediaPlayer.play();
     }
 
@@ -64,9 +61,7 @@ public class PlayerThread {
 
 
     public void stop() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
+    	mediaPlayer.stop();
     }
 
     public void setVolume(double volume) {
@@ -78,4 +73,6 @@ public class PlayerThread {
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
+    
+
 }

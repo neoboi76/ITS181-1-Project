@@ -23,9 +23,10 @@ public class MusicController {
 		return db.getAllSongs();
 	}
     
-	public void addSong(SongEvent e) {
+	public SongEvent getSong(SongEntity e) {
 		
 		String title = e.getTitle();
+		Long id = e.getId();
 		String artist = e.getArtist();
 		String album = e.getAlbum();
 		String duration = e.getDuration();
@@ -33,8 +34,9 @@ public class MusicController {
 		String audioPath = e.getAudioPath();
 		String imagePath = e.getImagePath();
 		
-		SongEntity song = new SongEntity(title, artist, album, duration, lyrics, audioPath, imagePath);
-		db.addSong(song);
+		SongEvent song = new SongEvent(this, id, title, artist, album, duration, lyrics, audioPath, imagePath);
+		
+		return song;
 		
 	}
 	

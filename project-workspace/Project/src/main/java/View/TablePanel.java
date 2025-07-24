@@ -27,14 +27,10 @@ public class TablePanel extends JPanel{
 	private PlayerThread player;
 	private SongPanel songPanel;
 	private ControlPanel controlPanel;
-	private Database db;
 	private SongListener songListener;
 	
-	public TablePanel(MusicController controller, SongPanel songPanel) {
+	public TablePanel(MusicController controller) {
 	    this.controller = controller;
-	    this.songPanel = songPanel;
-
-	    db = new Database();
 		
 		tableModel = new SongEntityTableModel();
 		table = new JTable(tableModel);
@@ -72,32 +68,41 @@ public class TablePanel extends JPanel{
 		                if (id == null) {
 		                    JOptionPane.showMessageDialog(null, "Could not determine selected song ID.");
 		                    return;
-		                }
-		                
+		                }		          
 		                
 		                if (player != null) {
-		                    player.stop(); 
+		                	player.stop();
 		                    controlPanel.btnPlayPause.setText("Play");
-		                    controlPanel.enableControls(false);
 		                }
-
-		                
 		               
 		                SongEntity song = controller.getSongById(id);		                		            
 		                
-		                songPanel.setSong(song);
-		      
-		                player = new PlayerThread(song.getAudioPath(), false); 
+		               
+		                SongEvent ev = controller.getSong(song);
 		                
-		                controlPanel.setId(song.getId());
+		                if (songListener != null)
+		                	songListener.songEventOccured(ev);
+		                	                
+
+		                player = new PlayerThread(ev.getAudioPath(), false); 
+		                
+		                controlPanel.setId(ev.getId());
 		                
 		                controlPanel.setPlayer(player);
-     
+		                
+		                if (player != null) {
+		                	player.stop();
+		                    controlPanel.btnPlayPause.setText("Play");
+		                }
+
 		                controlPanel.enableControls(true);
+		              
+  
+		          		              
 		            }
 		            
 		            else {
-		            	controlPanel.enableControls(false);
+		             controlPanel.enableControls(false);
 		            }
 		        }
 		    }
@@ -109,6 +114,7 @@ public class TablePanel extends JPanel{
 		return;
 		
 	}
+	
 
 	
 	public void loadSongs() {

@@ -41,7 +41,7 @@ public class MusicPlayer {
 		fileChooser.addChoosableFileFilter(new SongFileFilter());
 		controller = new MusicController();
 		songPanel = new SongPanel();
-		tablePanel = new TablePanel(controller, songPanel);
+		tablePanel = new TablePanel(controller);
 		
 		controlPanel = new ControlPanel(controller, tablePanel, songPanel);
 		
@@ -53,7 +53,10 @@ public class MusicPlayer {
 		tablePanel.setSongListener(new SongListener() {
 			
 			public void songEventOccured(SongEvent e) {
-				tablePanel.loadSongs();
+				
+			    songPanel.setSong(e);
+			      
+         				
 			}
 			
 		});
@@ -74,6 +77,10 @@ public class MusicPlayer {
 	
 	public TablePanel getTablePanel() {
 		return tablePanel;
+	}
+	
+	public PlayerThread getPlayer() {
+		return player;
 	}
 	
 	private JMenuBar createMenuBar() {
@@ -154,8 +161,9 @@ public class MusicPlayer {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				if (fileChooser.showSaveDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					try {
-						//controller.saveFile(fileChooser.getSelectedFile());
-						tablePanel.loadSongs();
+						//controller.saveFile(fileChooser.getSelectedFile(), () -> {
+					//	    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
+					//	});
 						
 					} catch (Exception ex) {
 						JOptionPane.showConfirmDialog(frm, ex.getStackTrace(), "Error", JOptionPane.ERROR_MESSAGE);

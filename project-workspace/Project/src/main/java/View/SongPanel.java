@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class SongPanel extends JPanel {
     private final JLabel artistLabel  = new JLabel("Artist: —", SwingConstants.CENTER);
-    private final JLabel coverLabel   = new JLabel();               // displays album art
+    private final JLabel coverLabel   = new JLabel();               
     private final JTextArea lyricsArea = new JTextArea();
    
 
@@ -44,7 +44,7 @@ public class SongPanel extends JPanel {
     }
 
    
-    public void setSong(SongEntity song) {
+    public void setSong(SongEvent song) {
         if (song == null) {
             artistLabel.setText("Artist: —");
             coverLabel.setIcon(null);
