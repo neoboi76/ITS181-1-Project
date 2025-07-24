@@ -170,7 +170,6 @@ public class MusicPlayer {
 				            if (isDuplicate) {
 				                JOptionPane.showMessageDialog(frm, "Song '" + fileName + "' has already been imported", "Error", JOptionPane.ERROR_MESSAGE);
 				            } else {
-				                System.out.println(fileName);
 				                controller.loadFile(file, () -> {
 				                    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
 				                });
@@ -184,6 +183,7 @@ public class MusicPlayer {
 					controller.loadFile(fileChooser.getSelectedFile(), () -> {
 					    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
 					});
+					
 				}
 					
 					

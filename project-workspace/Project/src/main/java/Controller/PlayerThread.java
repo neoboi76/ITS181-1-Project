@@ -22,6 +22,7 @@ public class PlayerThread{
     private MusicController controller;
     private ControlPanel controlPanel;
     private TablePanel tablePanel;  
+    private Media media;
     
     public PlayerThread(String fileLocation, boolean loop) {
         this.fileLocation = fileLocation;
@@ -71,10 +72,23 @@ public class PlayerThread{
                     } catch (InterruptedException e) {}
                 }
                 Platform.runLater(() -> {
-                    mediaPlayer.stop();
-                    mediaPlayer.dispose();
-                    mediaPlayer = null;
+                    try {
+                        if (mediaPlayer != null) {
+                            mediaPlayer.stop();        
+                            mediaPlayer.dispose();    
+                            mediaPlayer = null;        
+                        }
+
+                        if (media != null) {
+                            media = null;        
+                        }
+
+                        System.gc(); 
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 });
+
             }).start();
         }
     }

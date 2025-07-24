@@ -14,10 +14,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+
 import Controller.MusicController;
 import Controller.PlayerThread;
 import Model.SongEntity;
+import javafx.embed.swing.JFXPanel;
 import Model.Database;
+
+import javafx.application.Platform;
+
 
 public class TablePanel extends JPanel{
 
@@ -156,7 +161,8 @@ public class TablePanel extends JPanel{
 	    
 	    
 
-	    System.out.println("Row count in table: " + table.getRowCount());
+	    System.out.println("Row count in table: " + table.getRowCount());	    
+	    
 	}
 
 	

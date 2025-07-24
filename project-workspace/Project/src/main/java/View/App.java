@@ -10,7 +10,7 @@ public class App {
 	
     public static void main(String[] args) {
     	
-    	 new JFXPanel();
+    	new JFXPanel();
     	 
     	
         SwingUtilities.invokeLater(new Runnable(){
