@@ -75,11 +75,11 @@ public class SongPanel extends JPanel {
                 String lyrics = new String(Files.readAllBytes(Paths.get(lyricsPath)));
                 lyricsArea.setText(lyrics);
             } else {
-                lyricsArea.setText("");
+                lyricsArea.setText("No Lyrics Found");
             }
         } catch (IOException e) {
             e.printStackTrace();
-            lyricsArea.setText("[Error loading lyrics]");
+            lyricsArea.setText("No Lyrics Found");
         }
 
         lyricsArea.setCaretPosition(0);

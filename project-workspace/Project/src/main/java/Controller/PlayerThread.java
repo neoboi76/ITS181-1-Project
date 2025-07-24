@@ -14,7 +14,7 @@ import View.SongEvent;
 import View.Utils;
 import View.TablePanel;
 
-public class PlayerThread {
+public class PlayerThread{
 	
     private MediaPlayer mediaPlayer;
     private String fileLocation;
@@ -60,9 +60,25 @@ public class PlayerThread {
     }
 
 
-    public void stop() {
-    	mediaPlayer.stop();
+    public void stopPlayback() {
+        if (mediaPlayer != null) {
+            new Thread(() -> {
+                for (double vol = mediaPlayer.getVolume(); vol > 0; vol -= 0.1) {
+                    double v = vol;
+                    Platform.runLater(() -> mediaPlayer.setVolume(v));
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException e) {}
+                }
+                Platform.runLater(() -> {
+                    mediaPlayer.stop();
+                    mediaPlayer.dispose();
+                    mediaPlayer = null;
+                });
+            }).start();
+        }
     }
+
 
     public void setVolume(double volume) {
         if (mediaPlayer != null) {

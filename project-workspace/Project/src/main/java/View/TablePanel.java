@@ -29,6 +29,9 @@ public class TablePanel extends JPanel{
 	private ControlPanel controlPanel;
 	private SongListener songListener;
 	
+	private Long currentlyPlayingId = null;
+
+	
 	public TablePanel(MusicController controller) {
 	    this.controller = controller;
 		
@@ -70,9 +73,12 @@ public class TablePanel extends JPanel{
 		                    return;
 		                }		          
 		                
-		                if (player != null) {
-		                	player.stop();
-		                    controlPanel.btnPlayPause.setText("Play");
+		                if (id != currentlyPlayingId) {
+		                	if (player != null) {
+			                	player.stopPlayback();
+			                	System.out.println("Song Stopped");
+			                    controlPanel.btnPlayPause.setText("Play");
+			                }
 		                }
 		               
 		                SongEntity song = controller.getSongById(id);		                		            
@@ -90,14 +96,9 @@ public class TablePanel extends JPanel{
 		                
 		                controlPanel.setPlayer(player);
 		                
-		                if (player != null) {
-		                	player.stop();
-		                    controlPanel.btnPlayPause.setText("Play");
-		                }
-
 		                controlPanel.enableControls(true);
 		              
-  
+		                currentlyPlayingId = id;
 		          		              
 		            }
 		            
@@ -119,19 +120,45 @@ public class TablePanel extends JPanel{
 	
 	public void loadSongs() {
 	    List<SongEntity> songs = controller.getAllSongs();
-	    System.out.println("Songs from DB: " + songs.size()); 
+	    System.out.println("Songs from DB: " + songs.size());
 	    for (SongEntity s : songs) {
-	        System.out.println(s.getTitle()); 
+	        System.out.println(s.getTitle());
+	    }
+
+	    SongEntity selectedSong = null;
+
+	    // Use currentlyPlayingId to find the matching song
+	    if (currentlyPlayingId != null) {
+
+	        for (SongEntity s : songs) {
+	            if (Long.valueOf(s.getId()).equals(currentlyPlayingId)) {
+	                selectedSong = s;
+	                break;
+	            }
+	        }
 	    }
 	    
+	    System.out.println("Song Found");
 
 	    tableModel.setData(songs);
-	    
-	    
-	    System.out.println("Row count in table: " + table.getRowCount());
+	    tableModel.fireTableDataChanged();
 
-	  
+	    if (selectedSong != null) {
+	        for (int i = 0; i < tableModel.getRowCount(); i++) {
+	            if (tableModel.getData().get(i).equals(selectedSong)) {
+	                table.setRowSelectionInterval(i, i);
+	                break;
+	            }
+	        }
+	    }
+	    
+	    System.out.println("Song Regained");
+	    
+	    
+
+	    System.out.println("Row count in table: " + table.getRowCount());
 	}
+
 	
 	public SongEntityTableModel getTableModel() {
 		return tableModel;

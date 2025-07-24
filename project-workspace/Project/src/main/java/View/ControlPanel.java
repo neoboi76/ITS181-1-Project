@@ -59,7 +59,7 @@ public class ControlPanel extends JPanel {
 
         btnStop.addActionListener(e -> {
             if (isPlaying) {
-                player.stop();
+                player.stopPlayback();
                 stopSeekUpdater();
                 btnPlayPause.setText("Play");
                 isPlaying = false;
@@ -79,7 +79,7 @@ public class ControlPanel extends JPanel {
 
 	    	if (result == JOptionPane.YES_OPTION) {
 	    		if (isPlaying) {
-	        		player.stop();
+	        		player.stopPlayback();
 	        		stopSeekUpdater();
 	        		btnPlayPause.setText("Play");
 	        		controller.deleteSong(id);
