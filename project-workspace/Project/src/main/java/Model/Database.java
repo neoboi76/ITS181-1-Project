@@ -254,35 +254,6 @@ public class Database {
         ois.close();
     }
 
-
-    /*
-
-    public void saveSongDatabase(File safFile) {
-        try (FileOutputStream fos = new FileOutputStream(safFile);
-             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-
-            // Convert your song list to array and write it
-            SongEntity[] music = songs.toArray(new SongEntity[0]);
-            oos.writeObject(music);
-
-            System.out.println("Saved " + music.length + " songs to database.");
-
-            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-            successAlert.setTitle("Save Successful");
-            successAlert.setHeaderText("Song database saved");
-            successAlert.setContentText("File: " + safFile.getName());
-            successAlert.showAndWait();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setTitle("Save Error");
-            errorAlert.setHeaderText("Failed to Save Song Database");
-            errorAlert.setContentText("Could not write to the .saf file.");
-            errorAlert.showAndWait();
-        }
-    } */
-
     public SongEntity getSongById(Long id) {
     	return em.find(SongEntity.class, id);
     }

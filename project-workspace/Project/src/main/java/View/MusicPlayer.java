@@ -10,10 +10,14 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.sun.glass.events.KeyEvent;
 import com.sun.glass.events.WindowEvent;
@@ -40,7 +44,10 @@ public class MusicPlayer {
 		
 		
 		fileChooser = new JFileChooser();
+		fileChooser.setMultiSelectionEnabled(true);
 		fileChooser.addChoosableFileFilter(new SongFileFilter());
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("MP3 Files", "mp3");
+		fileChooser.setFileFilter(filter);
 		controller = new MusicController();
 		songPanel = new SongPanel();
 		tablePanel = new TablePanel(controller);
@@ -102,22 +109,22 @@ public class MusicPlayer {
 		JMenu window = new JMenu("Window");
 		JMenu show = new JMenu("Show");
 		
-		JCheckBoxMenuItem showLyricsItem = new JCheckBoxMenuItem("Lyrics");
-		showLyricsItem.setSelected(true);
-		show.add(showLyricsItem);
+		JCheckBoxMenuItem showTableItem = new JCheckBoxMenuItem("Table");
+		showTableItem.setSelected(true);
+		show.add(showTableItem);
 		window.add(show);
 		
 		menuBar.add(fileMenu);
 		menuBar.add(window);
 		
-		showLyricsItem.addActionListener(new ActionListener() {
+		showTableItem.addActionListener(new ActionListener() {
 			
 
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) e.getSource();
 				
-				songPanel.setVisible(menuItem.isSelected());
+				tablePanel.setVisible(menuItem.isSelected());
 				
 			}
 			
@@ -130,54 +137,59 @@ public class MusicPlayer {
 		
 		
 		importDataItem.addActionListener(new ActionListener() {
+			
+			
 
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
+
 				
 				if (fileChooser.showOpenDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					
 					String extension = Utils.getFileExtension(fileChooser.getSelectedFile());
-					String fileName = Utils.removeExtension(fileChooser.getSelectedFile().getName());
 					
-					if ("mp3".equalsIgnoreCase(extension)) {
+					File[] selectedFiles = fileChooser.getSelectedFiles(); 
+				    List<SongEntity> songList = controller.getAllSongs();
+				    
+				    ArrayList<File> fileList = new ArrayList<>(Arrays.asList(selectedFiles));
+					
+					for (File file: fileList) {
 						
-						List<SongEntity> songList = controller.getAllSongs(); 
+						String fileExtension = Utils.getFileExtension(file);
+						String fileName = Utils.removeExtension(file.getName());
 						
-						boolean existence = false;
-						
-						for (SongEntity s: songList) {
-						
+						if ("mp3".equalsIgnoreCase(fileExtension)) {
+													
 							
-							if (s.getTitle().equalsIgnoreCase(fileName)) {
+							for (SongEntity s: songList) {
+							
 								
-								existence = true;
-								
-							}
-
+								if (s.getTitle().equalsIgnoreCase(fileName)) {
+									
+									fileList.remove(file);
+									continue;
+									
+								}
 							
-						}
+						}	
 							
-					
-						if (existence) {
-							JOptionPane.showMessageDialog(frm, "Song already imported");
-						}
+						System.out.println(Utils.removeExtension(file.getName()));
 						
-						else {
-							controller.loadFile(fileChooser.getSelectedFile(), () -> {
-							    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
-							});
-							
-							System.out.println("Song loaded");
-						}
-						
-					}
-					
-					else if ("saf".equalsIgnoreCase(extension)) {
-			
-						controller.loadFile(fileChooser.getSelectedFile(), () -> {
+						controller.loadFile(file, () -> {
 						    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
 						});
+							
+						
 					}
+						
+				}
+					
+				if ("saf".equalsIgnoreCase(extension)) {
+		
+					controller.loadFile(fileChooser.getSelectedFile(), () -> {
+					    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
+					});
+				}
 					
 					
 					
