@@ -137,6 +137,7 @@ public class MusicPlayer {
 				if (fileChooser.showOpenDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					
 					String extension = Utils.getFileExtension(fileChooser.getSelectedFile());
+					String fileName = Utils.removeExtension(fileChooser.getSelectedFile().getName());
 					
 					if ("mp3".equalsIgnoreCase(extension)) {
 						
@@ -147,7 +148,7 @@ public class MusicPlayer {
 						for (SongEntity s: songList) {
 						
 							
-							if (s.getTitle().equalsIgnoreCase(extension)) {
+							if (s.getTitle().equalsIgnoreCase(fileName)) {
 								
 								existence = true;
 								
@@ -172,10 +173,12 @@ public class MusicPlayer {
 					}
 					
 					else if ("saf".equalsIgnoreCase(extension)) {
+			
 						controller.loadFile(fileChooser.getSelectedFile(), () -> {
 						    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
 						});
 					}
+					
 					
 					
 

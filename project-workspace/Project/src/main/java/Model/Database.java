@@ -202,20 +202,54 @@ public class Database {
     	SongEntity[] songs = music.toArray(new SongEntity[music.size()]);
     	oos.writeObject(songs);
     	
+    	oos.close();
+    	
     }
     
     
     
     public void loadSaf(File file) throws IOException, ClassNotFoundException {
+    	
+    	controller = new MusicController();
+    	
         FileInputStream fis = new FileInputStream(file);
         ObjectInputStream ois = new ObjectInputStream(fis);
         
-        SongEntity[] songs = (SongEntity[]) ois.readObject(); // deserialize
+        SongEntity[] songs = (SongEntity[]) ois.readObject(); 
+        
+        List<SongEntity> test = controller.getAllSongs();
+        
+        if (test != null || !test.isEmpty()) {
+        	
+        	List<SongEntity> songList = new ArrayList<>(controller.getAllSongs());
+        	List<SongEntity> bufferList = new ArrayList<>(Arrays.asList(songs));
+        	
+        	for (SongEntity s : songs) {
 
-        for (SongEntity s : songs) {
-
-            addSong(s); 
+            	for (SongEntity a : songList) {
+            		
+            		if (s.getTitle().equalsIgnoreCase(a.getTitle())) {
+            			
+            			bufferList.remove(s);
+            		}
+            		
+            	}
+            	
+            }
+        	
+        	for (SongEntity s: bufferList) {
+        		addSong(s);
+        	}
+        	
         }
+        
+        else {
+        	for (SongEntity s : songs) {
+        		addSong(s);
+        	}
+        }
+
+        
 
         ois.close();
     }
