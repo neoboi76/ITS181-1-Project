@@ -2,6 +2,7 @@ package View;
 
 import Controller.MusicController;
 import Controller.PlayerThread;
+import Model.SongEntity;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.WindowAdapter;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -133,10 +135,49 @@ public class MusicPlayer {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				
 				if (fileChooser.showOpenDialog(frm) == JFileChooser.APPROVE_OPTION) {
-					controller.loadFile(fileChooser.getSelectedFile(), () -> {
-					    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
-					});
+					
+					String extension = Utils.getFileExtension(fileChooser.getSelectedFile());
+					
+					if ("mp3".equalsIgnoreCase(extension)) {
+						
+						List<SongEntity> songList = controller.getAllSongs(); 
+						
+						boolean existence = false;
+						
+						for (SongEntity s: songList) {
+						
+							
+							if (s.getTitle().equalsIgnoreCase(extension)) {
+								
+								existence = true;
+								
+							}
 
+							
+						}
+							
+					
+						if (existence) {
+							JOptionPane.showMessageDialog(frm, "Song already imported");
+						}
+						
+						else {
+							controller.loadFile(fileChooser.getSelectedFile(), () -> {
+							    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
+							});
+							
+							System.out.println("Song loaded");
+						}
+						
+					}
+					
+					else if ("saf".equalsIgnoreCase(extension)) {
+						controller.loadFile(fileChooser.getSelectedFile(), () -> {
+						    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
+						});
+					}
+					
+					
 
 					System.out.println("File loaded");
 					System.out.println("yess");
@@ -161,10 +202,7 @@ public class MusicPlayer {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				if (fileChooser.showSaveDialog(frm) == JFileChooser.APPROVE_OPTION) {
 					try {
-						//controller.saveFile(fileChooser.getSelectedFile(), () -> {
-					//	    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
-					//	});
-						
+						controller.saveFile(fileChooser.getSelectedFile());
 					} catch (Exception ex) {
 						JOptionPane.showConfirmDialog(frm, ex.getStackTrace(), "Error", JOptionPane.ERROR_MESSAGE);
 					}

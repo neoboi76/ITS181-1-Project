@@ -1,6 +1,7 @@
 package Controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -46,29 +47,40 @@ public class MusicController {
 		
 	}
 	
-	/*
-	public void saveFile(File file) {
 
-		else if (databaseExtension.equalsIgnoreCase(Utils.getFileExtension(file))) {
-			db.saveSongDatabase(file);
-		}
-	}*/
+	public void saveFile(File file) throws FileNotFoundException, IOException {
+
+		db.saveSaf(file);
+		
+		//else if (databaseExtension.equalsIgnoreCase(Utils.getFileExtension(file))) {
+	//		db.saveSongDatabase(file);
+		//}
+	}
 	
 	public void loadFile(File file, Runnable onFinish) {
 
 		
 		if ("mp3".equalsIgnoreCase(Utils.getFileExtension(file))) {
 			
-		
 			new Thread(() -> {
 		        db.loadSongMp3(file); 
 		        Platform.runLater(onFinish); 
 		    }).start();
 		}
 		
-		/*else (databaseExtension.equalsIgnoreCase(Utils.getFileExtension(file))) {
-			//db.loadSongDatabase(file);
-		} */
+		else if ("saf".equalsIgnoreCase(Utils.getFileExtension(file))) {
+			
+			new Thread(() -> {
+		        try {
+					db.loadSaf(file);
+				} catch (ClassNotFoundException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+		        Platform.runLater(onFinish); 
+		    }).start();
+			
+		} 
 
 	}
 

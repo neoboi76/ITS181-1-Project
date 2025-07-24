@@ -78,7 +78,6 @@ public class SongPanel extends JPanel {
                 lyricsArea.setText("No Lyrics Found");
             }
         } catch (IOException e) {
-            e.printStackTrace();
             lyricsArea.setText("No Lyrics Found");
         }
 

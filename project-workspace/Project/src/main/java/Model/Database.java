@@ -9,10 +9,13 @@ import javafx.scene.media.MediaPlayer;
 import Model.SongEntity;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -62,6 +65,8 @@ public class Database {
 	private EntityManagerFactory emf;
     private EntityManager em;
     private MusicController controller;
+    
+    private List<SongEntity> music;
     
     public Database() {
     	emf = Persistence.createEntityManagerFactory("musicdata");
@@ -187,33 +192,36 @@ public class Database {
    
     }
     
-    /*
-    
-    public void loadSongDatabase(File safFile) {
-        try (FileInputStream fis = new FileInputStream(safFile);
-             ObjectInputStream ois = new ObjectInputStream(fis)) {
-
-            SongEntity[] music = (SongEntity[]) ois.readObject();
-            songs.clear();
-            songs.addAll(Arrays.asList(music));
-            for (SongEntity s : songs) {
-                addSong(s); // persist the loaded songs
-            }
-
-            songs.clear();
-            songs.addAll(Arrays.asList(music));
-
-            System.out.println("Loaded " + music.length + " songs from database.");
-
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setTitle("Load Error");
-            errorAlert.setHeaderText("Failed to Load Song Database");
-            errorAlert.setContentText("Could not read the .saf file.");
-            errorAlert.showAndWait();
-        }
+    public void saveSaf(File file) throws FileNotFoundException, IOException {
+    	
+    	FileOutputStream fos = new FileOutputStream(file);
+    	ObjectOutputStream oos = new ObjectOutputStream(fos);
+    	
+    	music = getAllSongs();
+    	
+    	SongEntity[] songs = music.toArray(new SongEntity[music.size()]);
+    	oos.writeObject(songs);
+    	
     }
+    
+    
+    
+    public void loadSaf(File file) throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream(file);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        
+        SongEntity[] songs = (SongEntity[]) ois.readObject(); // deserialize
+
+        for (SongEntity s : songs) {
+
+            addSong(s); 
+        }
+
+        ois.close();
+    }
+
+
+    /*
 
     public void saveSongDatabase(File safFile) {
         try (FileOutputStream fos = new FileOutputStream(safFile);
