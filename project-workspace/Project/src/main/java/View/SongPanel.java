@@ -22,7 +22,7 @@ public class SongPanel extends JPanel {
 
     public SongPanel() {
         setLayout(new BorderLayout(8,8));
-        setPreferredSize(new Dimension(350, 0));  
+        setPreferredSize(new Dimension(400, 0));  
         setBorder(new TitledBorder("Now Playing"));
 
         // Artist at top
@@ -39,7 +39,7 @@ public class SongPanel extends JPanel {
         lyricsArea.setLineWrap(true);
         lyricsArea.setWrapStyleWord(true);
         JScrollPane scroll = new JScrollPane(lyricsArea);
-        scroll.setPreferredSize(new Dimension(260, 150));
+        scroll.setPreferredSize(new Dimension(275, 250));
         add(scroll, BorderLayout.SOUTH);
     }
 

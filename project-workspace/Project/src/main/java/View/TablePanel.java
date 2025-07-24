@@ -127,7 +127,7 @@ public class TablePanel extends JPanel{
 
 	    SongEntity selectedSong = null;
 
-	    // Use currentlyPlayingId to find the matching song
+	   
 	    if (currentlyPlayingId != null) {
 
 	        for (SongEntity s : songs) {

@@ -153,36 +153,31 @@ public class MusicPlayer {
 				    
 				    ArrayList<File> fileList = new ArrayList<>(Arrays.asList(selectedFiles));
 					
-					for (File file: fileList) {
-						
-						String fileExtension = Utils.getFileExtension(file);
-						String fileName = Utils.removeExtension(file.getName());
-						
-						if ("mp3".equalsIgnoreCase(fileExtension)) {
-													
-							
-							for (SongEntity s: songList) {
-							
-								
-								if (s.getTitle().equalsIgnoreCase(fileName)) {
-									
-									fileList.remove(file);
-									continue;
-									
-								}
-							
-						}	
-							
-						System.out.println(Utils.removeExtension(file.getName()));
-						
-						controller.loadFile(file, () -> {
-						    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
-						});
-							
-						
-					}
-						
-				}
+				    for (File file : fileList) {
+				        String fileExtension = Utils.getFileExtension(file);
+				        String fileName = Utils.removeExtension(file.getName());
+
+				        if ("mp3".equalsIgnoreCase(fileExtension)) {
+				            boolean isDuplicate = false;
+
+				            for (SongEntity s : songList) {
+				                if (s.getTitle().equalsIgnoreCase(fileName)) {
+				                    isDuplicate = true;
+				                    break;
+				                }
+				            }
+
+				            if (isDuplicate) {
+				                JOptionPane.showMessageDialog(frm, "Song '" + fileName + "' has already been imported", "Error", JOptionPane.ERROR_MESSAGE);
+				            } else {
+				                System.out.println(fileName);
+				                controller.loadFile(file, () -> {
+				                    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
+				                });
+				            }
+				        }
+				    }
+
 					
 				if ("saf".equalsIgnoreCase(extension)) {
 		
