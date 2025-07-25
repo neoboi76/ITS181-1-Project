@@ -51,13 +51,20 @@ public class PlayerThread{
     }
 
     public void play() {
-        mediaPlayer.play();
+    	 if (mediaPlayer == null) {
+             MediaPlayer();
+         }
+         mediaPlayer.play();
     }
 
     public void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
         }
+    }
+    
+    public void stop() {
+    	mediaPlayer.stop();
     }
 
 
