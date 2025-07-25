@@ -157,6 +157,8 @@ public class TablePanel extends JPanel{
 	        }
 	    }
 	    
+	    controlPanel.switchClear(this);
+ 
 	    System.out.println("Song Regained");
 	    
 	    

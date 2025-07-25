@@ -40,7 +40,6 @@ public class MusicPlayer {
 		frm = new JFrame("Music Player");
 		frm.setLayout(new BorderLayout());
 		frm.setSize(1250, 700);
-	//	frm.setResizable(false);
 		
 		
 		fileChooser = new JFileChooser();
@@ -138,7 +137,6 @@ public class MusicPlayer {
 		
 		importDataItem.addActionListener(new ActionListener() {
 			
-			
 
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -173,6 +171,7 @@ public class MusicPlayer {
 				                controller.loadFile(file, () -> {
 				                    SwingUtilities.invokeLater(() -> tablePanel.loadSongs());
 				                });
+
 				            }
 				        }
 				    }

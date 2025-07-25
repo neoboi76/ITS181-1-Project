@@ -1,5 +1,6 @@
 package View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -13,6 +14,9 @@ public class SongEntityTableModel extends AbstractTableModel {
 	
 	private String[] colNames = {"ID", "Artist", "Title", "Album", "Duration" };
 
+	public SongEntityTableModel() {
+        this.db = new ArrayList<>(); // ✅ Prevents null
+    }
 	
     @Override
     public String getColumnName(int column) {

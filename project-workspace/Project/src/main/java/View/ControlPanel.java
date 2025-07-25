@@ -36,17 +36,9 @@ public class ControlPanel extends JPanel {
         btnStop = new JButton("Stop");
         btnDelete = new JButton("Delete");
         btnClear = new JButton("Clear");
-        btnStop.setEnabled(false);
-        btnPlayPause.setEnabled(false);
-        btnDelete.setEnabled(false);
+        disableControls(true);
         
-        if (tablePanel == null && tablePanel.getTableModel().getRowCount() == 0) {
-        	btnClear.setEnabled(false);
-        }
-        
-        else {
-        	btnClear.setEnabled(true);
-        }
+        switchClear(tablePanel);
 
         setPreferredSize(new Dimension(40, 70));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -230,7 +222,6 @@ public class ControlPanel extends JPanel {
     		btnPlayPause.setEnabled(false);
             btnStop.setEnabled(false);
             btnDelete.setEnabled(false);
-            btnClear.setEnabled(false);
     	}
 
     }
@@ -239,6 +230,17 @@ public class ControlPanel extends JPanel {
     	this.id = id;
     }
 
+    public void switchClear(TablePanel tablePanel) {
+    	 if (tablePanel != null && tablePanel.getTableModel() != null &&
+         	    tablePanel.getTableModel().getRowCount() > 0) {
+         		btnClear.setEnabled(true);
+         }
+         
+         else {
+         	btnClear.setEnabled(false);
+         	System.out.println("Clear out");
+         }
+    }
 
 
 	public Object getPlayer() {
