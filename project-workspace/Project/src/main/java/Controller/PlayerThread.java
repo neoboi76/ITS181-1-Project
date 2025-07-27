@@ -1,27 +1,23 @@
 package Controller;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import java.io.File;
-import java.util.List;
 
-import Controller.MusicController;
-import Model.SongEntity;
-import View.ControlPanel;
-import View.SongEvent;
-import View.Utils;
-import View.TablePanel;
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
 
-public class PlayerThread{
+//Manages music playback. Uses JavaFX
+
+public class PlayerThread {
 	
     private MediaPlayer mediaPlayer;
     private String fileLocation;
-    private boolean loop;
-    private MusicController controller;
-    private ControlPanel controlPanel;
-    private TablePanel tablePanel;  
+    private boolean loop;  
     private Media media;
     
     public PlayerThread(String fileLocation, boolean loop) {
@@ -33,8 +29,8 @@ public class PlayerThread{
     private void MediaPlayer() {
         Media media = new Media(fileLocation);
         mediaPlayer = new MediaPlayer(media);
-        controller = new MusicController();
 
+        //If looping, play at the song's end
         if (loop) {
             mediaPlayer.setOnEndOfMedia(() -> {
                 mediaPlayer.seek(mediaPlayer.getStartTime());
@@ -43,13 +39,18 @@ public class PlayerThread{
             
         }
         
+        //else stop it and return slider to beginning
         else {
-        	mediaPlayer.stop();
+        	mediaPlayer.setOnEndOfMedia(() -> {
+                mediaPlayer.seek(mediaPlayer.getStartTime());
+                mediaPlayer.stop();
+            });
         }
  
         
     }
 
+    //Plays a song
     public void play() {
     	 if (mediaPlayer == null) {
              MediaPlayer();
@@ -57,17 +58,19 @@ public class PlayerThread{
          mediaPlayer.play();
     }
 
+    //Pauses a song
     public void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
         }
     }
     
+    //Stops a song
     public void stop() {
     	mediaPlayer.stop();
     }
 
-
+    //Force stops JavaFx and fades the song away
     public void stopPlayback() {
         if (mediaPlayer != null) {
             new Thread(() -> {
@@ -100,13 +103,14 @@ public class PlayerThread{
         }
     }
 
-
+    //Sets song volume
     public void setVolume(double volume) {
         if (mediaPlayer != null) {
             mediaPlayer.setVolume(volume);
         }
     }
 
+    //Returns instance of MediaPlayer
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }

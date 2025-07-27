@@ -1,16 +1,24 @@
 package View;
 
-import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.util.Timer;
 import java.util.TimerTask;
 import Controller.MusicController;
 import Controller.PlayerThread;
-import Model.Database;
+
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
+
+//View class that displays music controls: play, pause, stop, delete, and clear
+//As well as song playback slider and volume control slider
 
 public class ControlPanel extends JPanel {
 
@@ -20,25 +28,28 @@ public class ControlPanel extends JPanel {
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final Color SECONDARY_TEXT = new Color(179, 179, 179);
     private static final Color BUTTON_COLOR = new Color(60, 60, 60);
+    private static final Color BUTTON_DELETE = new Color(231, 76, 60);
     private static final Color SLIDER_COLOR = new Color(100, 100, 100);
 
     private PlayerThread player;
     private MusicController controller;
-    private Database database;
     private Long id;
     private JSlider seekSlider;
     private Timer seekTimer;
     private boolean isPlaying = false;
     private TablePanel tablePanel;
+    private SongPanel songPanel;
 
-    public JButton btnPlayPause, btnStop, btnDelete;
+    public JButton btnPlayPause, btnStop, btnDelete, btnClear;
     private JLabel currentTimeLabel, totalTimeLabel;
     private JLabel nowPlayingLabel;
 
-    public ControlPanel(MusicController controller, TablePanel tablePanel) {
+    public ControlPanel(MusicController controller, TablePanel tablePanel, SongPanel songPanel) {
 
         this.controller = controller;
         this.tablePanel = tablePanel;
+        this.songPanel = songPanel;
+        
 
         initializeComponents();
         setupLayout();
@@ -49,11 +60,12 @@ public class ControlPanel extends JPanel {
         // Control buttons with modern styling
         btnPlayPause = createStyledButton("▶", SPOTIFY_GREEN, 50, 50);
         btnStop = createStyledButton("⏹", BUTTON_COLOR, 40, 40);
-        btnDelete = createStyledButton("🗑", new Color(231, 76, 60), 40, 40);
-
-        btnStop.setEnabled(false);
-        btnPlayPause.setEnabled(false);
-        btnDelete.setEnabled(false);
+        btnDelete = createStyledButton("🗑", BUTTON_DELETE, 40, 40);
+        btnClear = createStyledButton("ℹ", new Color(173, 216, 230), 40, 40);
+        
+        enableControls(false);
+        
+        switchClear(tablePanel);
 
         // Time labels
         currentTimeLabel = new JLabel("0:00");
@@ -143,6 +155,7 @@ public class ControlPanel extends JPanel {
         controlsPanel.add(btnDelete);
         controlsPanel.add(btnPlayPause);
         controlsPanel.add(btnStop);
+        controlsPanel.add(btnClear);
 
         // Seek panel
         JPanel seekPanel = new JPanel(new BorderLayout(10, 0));
@@ -231,10 +244,18 @@ public class ControlPanel extends JPanel {
 
         btnStop.addActionListener(e -> {
             if (isPlaying) {
-                player.stop();
+                player.stopPlayback();
                 stopSeekUpdater();
                 btnPlayPause.setText("▶");
                 isPlaying = false;
+                seekSlider.setValue(0);
+                currentTimeLabel.setText("0:00");
+            }
+            
+            else {
+            	player.stopPlayback();
+                stopSeekUpdater();
+                btnPlayPause.setText("▶");
                 seekSlider.setValue(0);
                 currentTimeLabel.setText("0:00");
             }
@@ -248,7 +269,7 @@ public class ControlPanel extends JPanel {
 
             if (result == JOptionPane.YES_OPTION) {
                 if (isPlaying) {
-                    player.stop();
+                    player.stopPlayback();
                     stopSeekUpdater();
                     btnPlayPause.setText("▶");
                     controller.deleteSong(id);
@@ -264,19 +285,42 @@ public class ControlPanel extends JPanel {
                 enableControls(false);
             }
         });
+        
+        btnClear.addActionListener(e -> {
+            int result = showStyledConfirmDialog(
+                    "Are you sure you want to delete all songs?",
+                    "Confirm Deletion"
+            );
+
+            if (result == JOptionPane.YES_OPTION) {
+            	if (player != null) {
+        			player.stopPlayback();
+	        		stopSeekUpdater();
+	        		btnPlayPause.setText("▶");
+        		}
+    
+            	controller.deleteAll();
+        		songPanel.clearSongPanel();
+        		tablePanel.loadSongs();
+        		enableControls(false);
+            }
+        });
     }
 
     private JButton createStyledButton(String text, Color bgColor, int width, int height) {
         JButton button = new JButton(text);
         button.setBackground(bgColor);
-        button.setForeground(TEXT_COLOR);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        button.setForeground(Color.WHITE); // or any preferred text color
+
+        // Use emoji-compatible font with fallback
+        Font emojiFont = new Font("Segoe UI Emoji", Font.PLAIN, 18);
+        if (!emojiFont.canDisplay(text.charAt(0))) {
+            emojiFont = new Font("Dialog", Font.PLAIN, 18);
+        }
         button.setBorderPainted(false);
         button.setFocusPainted(false);
         button.setPreferredSize(new Dimension(width, height));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // Rounded button effect
         button.setBorder(BorderFactory.createEmptyBorder());
         button.setContentAreaFilled(false);
         button.setOpaque(true);
@@ -296,6 +340,7 @@ public class ControlPanel extends JPanel {
 
         return button;
     }
+
 
     private void startSeekUpdater() {
         stopSeekUpdater();
@@ -349,6 +394,7 @@ public class ControlPanel extends JPanel {
         btnStop.setEnabled(enabled);
         btnDelete.setEnabled(enabled);
     }
+    
 
     public void setId(Long id) {
         this.id = id;
@@ -361,6 +407,17 @@ public class ControlPanel extends JPanel {
             nowPlayingLabel.setText("No song selected");
         }
     }
+    
+    public void switchClear(TablePanel tablePanel) {
+   	 if (tablePanel != null && tablePanel.getTableModel() != null &&
+        	    tablePanel.getTableModel().getRowCount() > 0) {
+        		btnClear.setEnabled(true);
+        }
+        
+        else {
+        	btnClear.setEnabled(false);
+        }
+   }
 
     public Object getPlayer() {
         return player;

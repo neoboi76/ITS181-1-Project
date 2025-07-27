@@ -1,16 +1,20 @@
 package View;
 
-import Model.SongEntity;
-
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.io.IOException;
+
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
+
+//JPanel that displays selected song information on the left 
 
 public class SongPanel extends JPanel {
 
@@ -27,7 +31,7 @@ public class SongPanel extends JPanel {
     private final JLabel durationLabel = new JLabel("0:00", SwingConstants.CENTER);
     private final JLabel coverLabel = new JLabel();
     private final JTextArea lyricsArea = new JTextArea();
-    private final JScrollPane lyricsScroll;
+    private final JScrollPane lyricsScroll = new JScrollPane(lyricsArea);
 
     public SongPanel() {
         initializeComponents();
@@ -60,7 +64,7 @@ public class SongPanel extends JPanel {
         coverLabel.setPreferredSize(new Dimension(280, 280));
         coverLabel.setBackground(PANEL_COLOR);
         coverLabel.setOpaque(true);
-        coverLabel.setBorder(BorderFactory.createRoundedBorder(8));
+        coverLabel.setBorder(BorderFactory.createBevelBorder(8));
 
         // Default album cover
         setDefaultAlbumCover();
@@ -75,10 +79,10 @@ public class SongPanel extends JPanel {
         lyricsArea.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         lyricsArea.setText("Select a song to view lyrics...");
 
-        lyricsScroll = new JScrollPane(lyricsArea);
+        //lyricsScroll = new JScrollPane(lyricsArea);
         lyricsScroll.setBackground(PANEL_COLOR);
         lyricsScroll.getViewport().setBackground(PANEL_COLOR);
-        lyricsScroll.setBorder(BorderFactory.createRoundedBorder(8));
+        lyricsScroll.setBorder(BorderFactory.createBevelBorder(8));
         lyricsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         lyricsScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -90,13 +94,12 @@ public class SongPanel extends JPanel {
         setLayout(new BorderLayout(0, 15));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Top panel - Song info
+        // Song info panel (header)
         JPanel songInfoPanel = new JPanel();
         songInfoPanel.setLayout(new BoxLayout(songInfoPanel, BoxLayout.Y_AXIS));
         songInfoPanel.setBackground(BACKGROUND_COLOR);
         songInfoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        // Header label
         JLabel nowPlayingHeader = new JLabel("NOW PLAYING", SwingConstants.CENTER);
         nowPlayingHeader.setFont(new Font("Segoe UI", Font.BOLD, 12));
         nowPlayingHeader.setForeground(SPOTIFY_GREEN);
@@ -108,17 +111,24 @@ public class SongPanel extends JPanel {
         songInfoPanel.add(Box.createVerticalStrut(5));
         songInfoPanel.add(artistLabel);
         songInfoPanel.add(Box.createVerticalStrut(5));
-        songInfoPanel.add(albumLabel);
+        songInfoPanel.add(albumLabel); // newly added
         songInfoPanel.add(Box.createVerticalStrut(10));
         songInfoPanel.add(durationLabel);
 
-        // Center panel - Album cover
+        // Album cover panel
         JPanel coverPanel = new JPanel(new BorderLayout());
         coverPanel.setBackground(BACKGROUND_COLOR);
         coverPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         coverPanel.add(coverLabel, BorderLayout.CENTER);
 
-        // Bottom panel - Lyrics
+        // Combine song info and cover into one top panel
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.setBackground(BACKGROUND_COLOR);
+        topPanel.add(songInfoPanel, BorderLayout.NORTH);
+        topPanel.add(coverPanel, BorderLayout.CENTER);
+
+        // Lyrics panel (scrolling)
         JPanel lyricsPanel = new JPanel(new BorderLayout());
         lyricsPanel.setBackground(BACKGROUND_COLOR);
 
@@ -127,13 +137,18 @@ public class SongPanel extends JPanel {
         lyricsHeader.setForeground(SPOTIFY_GREEN);
         lyricsHeader.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
+        // Set preferred height for lyricsScroll
+        lyricsScroll.setPreferredSize(new Dimension(lyricsScroll.getPreferredSize().width, 400));
+
         lyricsPanel.add(lyricsHeader, BorderLayout.NORTH);
         lyricsPanel.add(lyricsScroll, BorderLayout.CENTER);
 
-        add(songInfoPanel, BorderLayout.NORTH);
-        add(coverPanel, BorderLayout.CENTER);
-        add(lyricsPanel, BorderLayout.SOUTH);
+        // Apply layout
+        add(topPanel, BorderLayout.NORTH);
+        add(lyricsPanel, BorderLayout.CENTER); // Correct panel here, not lyricsScroll directly
     }
+
+
 
     private void setDefaultAlbumCover() {
         // Create a default album cover with music note icon
@@ -199,7 +214,7 @@ public class SongPanel extends JPanel {
         });
     }
 
-    public void setSong(SongEntity song) {
+    public void setSong(SongEvent song) {
         if (song == null) {
             titleLabel.setText("No song selected");
             artistLabel.setText("Unknown Artist");
@@ -216,53 +231,45 @@ public class SongPanel extends JPanel {
         albumLabel.setText(song.getAlbum() != null ? song.getAlbum() : "Unknown Album");
         durationLabel.setText(song.getDuration() != null ? song.getDuration() : "0:00");
 
-        // Set album cover
-        String imgPath = song.getImagePath();
-        if (imgPath != null && !imgPath.isBlank() && !imgPath.equals("default.jpg") && !imgPath.equals("No path found")) {
-            try {
-                ImageIcon icon = new ImageIcon(imgPath);
-                Image img = icon.getImage().getScaledInstance(280, 280, Image.SCALE_SMOOTH);
+        //// 1) Artist name
+        artistLabel.setText("Artist: " + song.getArtist());
 
-                // Create rounded image
-                java.awt.image.BufferedImage roundedImg = new java.awt.image.BufferedImage(280, 280, java.awt.image.BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2d = roundedImg.createGraphics();
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setClip(new java.awt.geom.RoundRectangle2D.Float(0, 0, 280, 280, 8, 8));
-                g2d.drawImage(img, 0, 0, null);
-                g2d.dispose();
+	     // 2) Album name
+	     albumLabel.setText("Album: " + song.getAlbum());
+	
+	     // 3) Album cover image
+	     String imgPath = song.getImagePath();
+	     if (imgPath != null && !imgPath.isBlank()) {
+	         ImageIcon icon = new ImageIcon(imgPath);
+	         Image img = icon.getImage().getScaledInstance(310, 295, Image.SCALE_SMOOTH);
+	         coverLabel.setIcon(new ImageIcon(img));
+	     } else {
+	         coverLabel.setIcon(null);
+	     }
+	
+	     // 4) Lyrics (load from SongEntity.getLyrics())
+	     try {
+	         String lyricsPath = song.getLyrics();
+	         if (lyricsPath != null) {
+	             String lyrics = new String(Files.readAllBytes(Paths.get(lyricsPath)));
+	             lyricsArea.setText(lyrics);
+	         } else {
+	             lyricsArea.setText("No Lyrics Found");
+	         }
+	     } catch (IOException e) {
+	         lyricsArea.setText("No Lyrics Found");
+	     }
+	
+	     lyricsArea.setCaretPosition(0);
 
-                coverLabel.setIcon(new ImageIcon(roundedImg));
-            } catch (Exception e) {
-                setDefaultAlbumCover();
-            }
-        } else {
-            setDefaultAlbumCover();
-        }
-
-        // Set lyrics
-        try {
-            String lyricsPath = song.getLyrics();
-            if (lyricsPath != null && !lyricsPath.equals("No lyrics available.") && !lyricsPath.equals("No path found")) {
-                // Check if it's a file path or direct lyrics content
-                if (lyricsPath.contains("/") || lyricsPath.contains("\\")) {
-                    // It's a file path
-                    try {
-                        String lyrics = new String(Files.readAllBytes(Paths.get(lyricsPath)));
-                        lyricsArea.setText(lyrics.isEmpty() ? "No lyrics available." : lyrics);
-                    } catch (IOException e) {
-                        lyricsArea.setText("Could not load lyrics file.");
-                    }
-                } else {
-                    // It's direct lyrics content
-                    lyricsArea.setText(lyricsPath);
-                }
-            } else {
-                lyricsArea.setText("No lyrics available.");
-            }
-        } catch (Exception e) {
-            lyricsArea.setText("Error loading lyrics.");
-        }
-
-        lyricsArea.setCaretPosition(0);
+    }
+    
+    public void clearSongPanel() {
+    	titleLabel.setText("No song selected");
+        artistLabel.setText("Unknown Artist");
+        albumLabel.setText("Unknown Album");
+        durationLabel.setText("0:00");
+        setDefaultAlbumCover();
+        lyricsArea.setText("Select a song to view lyrics...");
     }
 }

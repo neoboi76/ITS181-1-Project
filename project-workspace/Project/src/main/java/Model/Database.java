@@ -6,59 +6,31 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.media.MediaPlayer;
-import Model.SongEntity;
-
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.images.Artwork;
-
 import javafx.application.Platform;
-
-
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import javafx.embed.swing.JFXPanel;
-import java.util.logging.Level;
-
-import View.SongEvent;
 import View.Utils;
 import Controller.MusicController;
-import Controller.PlayerThread;
 import com.mpatric.mp3agic.*;
+
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
+
+//Manages loading (mp3 and saf files) and saving (saf) of application related files
+//Also manages connection with MySQL database (i.e., retrieving currently saved data in MySQL).
 
 public class Database {
 	
@@ -70,15 +42,18 @@ public class Database {
     
     private List<SongEntity> music;
     
+    //Creates Persistence connection
     public Database() {
     	emf = Persistence.createEntityManagerFactory("musicdata");
     	em = emf.createEntityManager();
     }
     
+    //Returns all songs from MySQL database as List of type SongEntity
     public List<SongEntity> getAllSongs() {
     	return em.createQuery("SELECT s FROM SongEntity s", SongEntity.class).getResultList();
     }
     
+    //Add songs to MySQL database
     public void addSong(SongEntity music) {
     	
     	em.getTransaction().begin();
@@ -120,6 +95,7 @@ public class Database {
     	
     }
     
+    //Deletes song from MySQL
     public void deleteSongMp3(Long id) {
     	
     	em.getTransaction().begin();
@@ -133,7 +109,7 @@ public class Database {
     	
     }
     
-    
+    //Loads song mp3 locally
     public void loadSongMp3(File file) {
     	
 
@@ -194,6 +170,7 @@ public class Database {
    
     }
     
+    //Saves all imported songs in the table as type saf file.
     public void saveSaf(File file) throws FileNotFoundException, IOException {
     	
     	FileOutputStream fos = new FileOutputStream(file);
@@ -256,10 +233,12 @@ public class Database {
         ois.close();
     }
 
+    //Gets a song from the database using id
     public SongEntity getSongById(Long id) {
     	return em.find(SongEntity.class, id);
     }
-	
+    
+	//Deletes all songs currently saved in the MySQL database.
     public void clearDB() {
     	
     	tx = em.getTransaction();

@@ -8,11 +8,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Component;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,11 +21,19 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
-
 import Controller.MusicController;
 import Controller.PlayerThread;
 import Model.SongEntity;
-import Model.Database;
+
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
+ 
+//JPanel that displays lists of songs in a table format on the right
 
 public class TablePanel extends JPanel {
 
@@ -38,23 +44,19 @@ public class TablePanel extends JPanel {
 	private static final Color TEXT_COLOR = Color.WHITE;
 	private static final Color SECONDARY_TEXT = new Color(179, 179, 179);
 	private static final Color SELECTION_COLOR = new Color(29, 185, 84, 50);
-	private static final Color HOVER_COLOR = new Color(40, 40, 40, 100);
 	private static final Color SPOTIFY_GREEN = new Color(29, 185, 84);
 
 	private JTable table;
 	private SongEntityTableModel tableModel;
 	private MusicController controller;
 	private PlayerThread player;
-	private SongPanel songPanel;
 	private ControlPanel controlPanel;
-	private Database db;
 	private SongListener songListener;
+	private Long currentlyPlayingId = null;
 
-	public TablePanel(MusicController controller, SongPanel songPanel) {
+	public TablePanel(MusicController controller) {
 		this.controller = controller;
-		this.songPanel = songPanel;
 
-		db = new Database();
 		initializeComponents();
 		setupLayout();
 		setupEventListeners();
@@ -216,24 +218,37 @@ public class TablePanel extends JPanel {
 							return;
 						}
 
-						// Stop current player if playing
-						if (player != null) {
-							player.stop();
-							if (controlPanel != null) {
-								controlPanel.btnPlayPause.setText("▶");
-								controlPanel.enableControls(false);
-							}
-						}
+						if (id != currentlyPlayingId) {
+		                	if (player != null) {
+			                	player.stopPlayback();
+			                    controlPanel.btnPlayPause.setText("▶");
+			                }
+		                }
 
-						// Get and display song
-						SongEntity song = controller.getSongById(id);
-						songPanel.setSong(song);
+					
+		                SongEntity song = controller.getSongById(id);		                		            
+		                
+			               
+		                SongEvent ev = controller.getSong(song);
+		                
+		                if (songListener != null)
+		                	songListener.songEventOccured(ev);
+		                	                
 
-						// Create new player
+		                player = new PlayerThread(ev.getAudioPath(), false); 
+		                
+		                controlPanel.setId(ev.getId());
+		                
+		                controlPanel.setPlayer(player);
+		                
+		                controlPanel.enableControls(true);
+		              
+		                currentlyPlayingId = id;
+
+						
 						player = new PlayerThread(song.getAudioPath(), false);
 
 						if (controlPanel != null) {
-							controlPanel.setId(song.getId());
 							controlPanel.setPlayer(player);
 							controlPanel.setNowPlaying(song.getTitle(), song.getArtist());
 							controlPanel.enableControls(true);
@@ -331,11 +346,34 @@ public class TablePanel extends JPanel {
 
 	public void loadSongs() {
 		List<SongEntity> songs = controller.getAllSongs();
-		System.out.println("Songs from DB: " + songs.size());
+		
+		SongEntity selectedSong = null;
+
+		   
+	    if (currentlyPlayingId != null) {
+
+	        for (SongEntity s : songs) {
+	            if (Long.valueOf(s.getId()).equals(currentlyPlayingId)) {
+	                selectedSong = s;
+	                break;
+	            }
+	        }
+	    }
+	    
+	    if (currentlyPlayingId != null) {
+
+	        for (SongEntity s : songs) {
+	            if (Long.valueOf(s.getId()).equals(currentlyPlayingId)) {
+	                selectedSong = s;
+	                break;
+	            }
+	        }
+	    }
 
 		tableModel.setData(songs);
+		tableModel.fireTableDataChanged();
 
-		// Update song count in header
+		
 		Component[] components = ((JPanel) getComponent(0)).getComponents();
 		for (Component comp : components) {
 			if (comp instanceof JLabel && ((JLabel) comp).getForeground().equals(SECONDARY_TEXT)) {
@@ -343,8 +381,18 @@ public class TablePanel extends JPanel {
 				break;
 			}
 		}
+		
+	    if (selectedSong != null) {
+	        for (int i = 0; i < tableModel.getRowCount(); i++) {
+	            if (tableModel.getData().get(i).equals(selectedSong)) {
+	                table.setRowSelectionInterval(i, i);
+	                break;
+	            }
+	        }
+	    }
+	    
+	    controlPanel.switchClear(this);
 
-		System.out.println("Row count in table: " + table.getRowCount());
 	}
 
 	public SongEntityTableModel getTableModel() {
@@ -360,7 +408,7 @@ public class TablePanel extends JPanel {
 	}
 
 	private void showStyledErrorMessage(String message) {
-		// Create custom error dialog with dark theme
+
 		javax.swing.JDialog dialog = new javax.swing.JDialog(
 				(java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this),
 				"Error",

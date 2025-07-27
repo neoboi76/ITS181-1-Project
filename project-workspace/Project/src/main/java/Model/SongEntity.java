@@ -3,9 +3,16 @@ package Model;
 import java.io.Serializable;
 
 import jakarta.persistence.*;
-import javafx.scene.media.Media;
 
-//Model Class
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
+
+//Main Model class. 
 
 @Entity
 @Table(name = "songs")

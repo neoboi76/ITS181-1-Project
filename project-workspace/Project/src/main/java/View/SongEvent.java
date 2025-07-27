@@ -1,10 +1,16 @@
 package View;
 
-
 import java.util.EventObject;
 
-import Model.SongEntity;
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
 
+//Song event class for facilitating and handling custom events
 
 public class SongEvent extends EventObject {
 

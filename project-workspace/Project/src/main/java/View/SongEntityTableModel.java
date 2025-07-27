@@ -2,11 +2,18 @@ package View;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-
 import Model.SongEntity;
+
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
+
+//Model for the TablePanel
 
 public class SongEntityTableModel extends AbstractTableModel {
 	
@@ -15,7 +22,7 @@ public class SongEntityTableModel extends AbstractTableModel {
 	private String[] colNames = {"ID", "Artist", "Title", "Album", "Duration" };
 
 	public SongEntityTableModel() {
-        this.db = new ArrayList<>(); // ✅ Prevents null
+        this.db = new ArrayList<>(); 
     }
 	
     @Override

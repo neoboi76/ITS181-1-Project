@@ -2,10 +2,19 @@ package View;
 
 import java.io.File;
 
-import javafx.scene.media.Media;
+/*
+ * Project Created by Group 6:
+ * 	Kenji Mark Alan Arceo
+ *  Ryonan Owen Ferrer
+ *  Dino Alfred Timbol
+ *  Mike Emil Vocal
+ */
+
+//Utilities class that serves various functions throughout the project
 
 public class Utils {
 	
+	//Returns file extension as string
 	public static String getFileExtension(File file) {
 	    String name = file.getName();
 	    int lastDot = name.lastIndexOf('.');
@@ -15,19 +24,13 @@ public class Utils {
 	    return null; 
 	}
 
-    
+    //Returns filename without extension as string
     public static String removeExtension(String filename) {
         int dotIndex = filename.lastIndexOf('.');
         return (dotIndex == -1) ? filename : filename.substring(0, dotIndex);
     }
     
-    
-    
-    public static String getMeta(Media media, String key) {
-	    Object value = media.getMetadata().get(key);
-	    return value != null ? value.toString() : "Unknown";
-	}
-    
+    //Formats duration as "minutes:seconds" (e.g. "3:16")
     public static String formatDuration(double seconds) {
         int totalSeconds = (int) Math.round(seconds);
         int mins = totalSeconds / 60;
@@ -36,7 +39,7 @@ public class Utils {
     }
 
 
-    
+    //Returns path of album image as string
     public static String getImagePath(String fileLocation) {
         File file = new File(fileLocation);
         File folder = file.getParentFile();
@@ -61,6 +64,7 @@ public class Utils {
         return placeholder.getAbsolutePath(); // return placeholder if nothing found
     }
 
+    //Returns path of lyrics text document as string
     public static String getLyricsPath(String fileLocation) {
         File file = new File(fileLocation);
         File folder = file.getParentFile();
