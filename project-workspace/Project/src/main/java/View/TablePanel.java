@@ -97,6 +97,7 @@ public class TablePanel extends JPanel {
 				label.setFont(new Font("Segoe UI", Font.BOLD, 12));
 				label.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 10));
 				label.setOpaque(true);
+				label.setHorizontalAlignment(SwingConstants.CENTER);
 				return label;
 			}
 		});
