@@ -103,8 +103,8 @@ src/
 ## 👨‍💻 Authors
 
 * Kenji Mark Alan Arceo
-* Ryonan Owen Ferrer
-* Dino Alfred Timbol
+* **Ryonan Owen Ferrer (Lead front-end developer)**
+* **Dino Alfred Timbol (Lead back-end developer)**
 * Mike Emil Vocal
 
 ---
